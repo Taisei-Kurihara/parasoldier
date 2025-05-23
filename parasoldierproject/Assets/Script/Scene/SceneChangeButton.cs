@@ -1,21 +1,16 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using TMPro;
+using UniRx;
 
 public class SceneChangeButton : MonoBehaviour
 {
     [SerializeField]
-    SceneName sceneName;
+    private SceneName sceneName;
 
     private void Awake()
     {
-        Button button = GetComponent<Button>();
-        button.onClick.AddListener(SceneLoad);
-    }
-
-    private void SceneLoad()
-    {
-        SceneLoader.Instance.LoadNextScene(sceneName.ToString());
+        GetComponent<Button>().OnClickAsObservable()
+            .Subscribe(button =>  SceneLoader.Instance.LoadNextScene(sceneName.ToString() ))
+            .AddTo(this);
     }
 }
