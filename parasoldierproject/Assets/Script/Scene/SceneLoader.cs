@@ -82,7 +82,10 @@ public class SceneLoader : MonoBehaviour
 
     private void LoadFlagsReset() { loadFlags = new BitArray(4, false); }
     public void LoadUIAllSet(){ loadFlags[0] = true; }
+    public void Loadended() { loadFlags[2] = true; }
     public void LoadAllClear() { loadFlags[3] = true; }
+
+    public bool CheckLoadended { get { return loadFlags[2]; } }
     public bool CheckLoadAllClear { get { return loadFlags[3]; } }
     // [0] = ロードUI準備完了
     // [1] = 現在のシーン削除済み
@@ -91,6 +94,7 @@ public class SceneLoader : MonoBehaviour
 
     IEnumerator LoadSceneAsync(string nextSceneName, string loadSceneName)
     {
+
         percent = 0;
         LoadFlagsReset();
 
@@ -112,7 +116,10 @@ public class SceneLoader : MonoBehaviour
         while (percent < 1){ percent = Mathf.Clamp01(nextOp.progress / 0.9f); }
         nextOp.allowSceneActivation = true;
         while (!nextOp.isDone) yield return null;
-        loadFlags.Set(2, true);
+
+        CreativeDestructionManager manager = CreativeDestructionManager.Instance;
+        manager.WhatToDoNow(nextSceneName);
+        //loadFlags.Set(2, true);
 
         // 5. ロードUIの終了通知を待つ
         while (!loadFlags.Get(3)) yield return null;
