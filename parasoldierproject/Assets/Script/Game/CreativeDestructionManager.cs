@@ -7,6 +7,7 @@ using static UnityEngine.Rendering.DebugUI.Table;
 using System;
 using UnityEngine.SceneManagement;
 using UnityEngine.Windows;
+using Unity.VisualScripting;
 
 public enum ImplementedPlayerCharacter
 {
@@ -24,10 +25,8 @@ public class CreativeDestructionManager : MonoBehaviour
         {
             if (instance == null)
             {
-                // �����̃C���X�^���X��T��
                 instance = FindObjectOfType<CreativeDestructionManager>();
 
-                // �Ȃ���ΐV�K����
                 if (instance == null)
                 {
                     GameObject obj = new GameObject("CreativeDestructionManager");
@@ -40,23 +39,21 @@ public class CreativeDestructionManager : MonoBehaviour
 
     void Awake()
     {
-        // �V���O���g����
         if (instance != null && instance != this)
         {
             Destroy(gameObject);
             return;
         }
         instance = this;
-        DontDestroyOnLoad(gameObject); // �V�[�����܂����ł��ێ�
+        DontDestroyOnLoad(gameObject);
 
-        // �G�f�B�^��ł̃f�o�b�O�p
 #if UNITY_EDITOR
         DebugSceneCheck();
 #endif
     }
     #endregion
 
-    #region �G�f�B�^��ł̃f�o�b�O�p
+    #region
     private void DebugSceneCheck()
     {
         SceneName sceneName;
@@ -81,9 +78,10 @@ public class CreativeDestructionManager : MonoBehaviour
 
     #endregion
 
-    #region scene���̏����𕪊� / �J�n���ߏ���
+    #region
 
-    // scene���̏����𕪊򃁃\�b�h
+    /// <summary> 次のscene読み込み時 特定の処理を行ってからloadを開けるようにする /// </summary>
+    /// <param name="sceneName"></param>
     public void WhatToDoNow(string sceneName)
     {
 
@@ -110,50 +108,58 @@ public class CreativeDestructionManager : MonoBehaviour
 
     #endregion
 
-    /// <summary> �L�����N�^�[�ƃX�e�[�W�̃f�[�^��ێ�����N���X /// </summary>
     CreativeCharacterAndStageDatas Datas;
+    int playerCharacterIndex = 0; // プレイヤーキャラクターのインデックス
+
 
     MainCanvas mainCanvas = null;
 
-    /// <summary> [0 = �{�^����������Ă��Ȃ���] [1 = start] [2 = �߂�] /// </summary>
-    BitArray StartOrBackCheck = new BitArray(3, true);
 
-    public MainCanvas MainCanvas { get { return mainCanvas; } set { mainCanvas = (mainCanvas = null) ? null : mainCanvas; } }
+    public MainCanvas MainCanvasData { get { return mainCanvas; } set { mainCanvas = (mainCanvas = null) ? null : mainCanvas; } }
 
-    #region ���j���[��ʂ̏���
+    #region
 
+    /// <summary> selectボタンの生成配置 /// </summary>
     async UniTask StartPlayerCharacterMenu()
     {
         
         int i = 0;
 
-        while (Enum.IsDefined(typeof(ImplementedPlayerCharacter), i))
+        await UniTask.WaitUntil(() => mainCanvas != null, cancellationToken: this.destroyCancellationToken);
+        
+        // selectボタンを生成する
+        string addressKey = "key";
+
+        AsyncOperationHandle<GameObject> handle = Addressables.LoadAssetAsync<GameObject>(addressKey);
+        await handle;
+        if (handle.Status == AsyncOperationStatus.Succeeded)
         {
-            string addressKey = "key";
-
-            AsyncOperationHandle<GameObject> handle = Addressables.LoadAssetAsync<GameObject>(addressKey);
-            await handle;
-
-            if (handle.Status == AsyncOperationStatus.Succeeded)
+            while (Enum.IsDefined(typeof(ImplementedPlayerCharacter), i))
             {
                 GameObject prefab = handle.Result;
                 GameObject instance = Instantiate(prefab, mainCanvas.transform);
-            }
-            else
-            {
-                Debug.LogWarning($"Failed to load: {addressKey}");
-            }
+                SelectButton selectButton = instance.GetComponent<SelectButton>();
 
-            i++;
+                selectButton.Init(i);
+                i++;
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"Failed to load: {addressKey}");
         }
 
-        SetCheck().Forget(); // �X�^�[�g�{�^���ƃo�b�N�{�^���̓��̓`�F�b�N���J�n
+        SetCheck().Forget();
     }
 
 
-    public void StartButtonInput() { StartOrBackCheck[1] = true; }
+    BitArray StartOrBackCheck = new BitArray(1, true);
 
-    public void BackButtonInput() { StartOrBackCheck[2] = true; }
+    public bool StartButtonInputCheck => StartOrBackCheck[0];
+
+    public void StartButtonInput() { StartAsync().Forget(); }
+
+    public void BackButtonInput() { Back(); }
 
     async UniTask SetCheck()
     {
@@ -162,33 +168,22 @@ public class CreativeDestructionManager : MonoBehaviour
         SceneLoader loader = SceneLoader.Instance;
         loader.Loadended();
 
-        // ���j���[��ʂ̏���������
-        if (StartOrBackCheck[0]) { StartOrBackCheck = new BitArray(3, false); }
-
-        await UniTask.WaitUntil(() => StartOrBackCheck == new BitArray(3, false), cancellationToken: token);
-
-        StartOrBackCheck[0] = true;
-
-        if (StartOrBackCheck[1])
-        {
-            StartAsync().Forget();
-        }
-        else
-        {
-            Back();
-        }
+        StartOrBackCheck[0] = false;
     }
 
     async UniTask StartAsync()
     {
         var token = this.destroyCancellationToken;
-        Debug.Log("�Q�[���J�n");
+
+        StartOrBackCheck[0] = true;
+        Datas = new CreativeCharacterAndStageDatas(new string[0], new string[0], Enum.ToObject(typeof(ImplementedPlayerCharacter), playerCharacterIndex).ToString());
+
+        SceneLoader.Instance.LoadNextScene(SceneName.Game.ToString());
     }
 
     void Back()
     {
-        var token = this.destroyCancellationToken;
-        Debug.Log("�^�C�g���ɖ߂�");
+        StartOrBackCheck[0] = true;
         SceneLoader.Instance.LoadNextScene(SceneName.Title.ToString());
     }
     #endregion

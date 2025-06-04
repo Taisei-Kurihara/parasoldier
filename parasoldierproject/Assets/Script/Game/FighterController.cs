@@ -31,16 +31,16 @@ public class FighterController : MonoBehaviour
     private float lastChargeTime = -999f; // 最後の突進攻撃時間
 
     [Header("ゲージ・HP")]
-    public int gauge = 7; // 現在のゲージ数
-    public int maxGauge = 7; // ゲージ最大値
-    public int hp = 10; // 現在のHP
-    public int maxHP = 10; // HP最大値
+    public float gauge = 7; // 現在のゲージ数
+    public float maxGauge = 7; // ゲージ最大値
+    public float hp = 10; // 現在のHP
+    public float maxHP = 10; // HP最大値
     private float gaugeRecoveryRate = 1f / 2.5f; // 2.5秒で1ゲージ回復
     private float gaugeRecoveryProgress = 0f; // ゲージ回復進捗
 
     [Header("UI表示")]
-    public Text hpText; // HP表示UI
-    public Text gaugeText; // ゲージ表示UI
+    public Image hpText; // HP表示UI
+    public Image gaugeText; // ゲージ表示UI
 
     [Header("攻撃判定")]
     public GameObject hitBoxPrefab; // 攻撃用ヒットボックスプレハブ
@@ -181,7 +181,7 @@ public class FighterController : MonoBehaviour
 
     void UpdateUI()
     {
-        if (hpText != null) hpText.text = $"HP: {hp}/{maxHP}";
-        if (gaugeText != null) gaugeText.text = $"ゲージ: {gauge}/{maxGauge}";
+        if (hpText != null) hpText.fillAmount = hp/maxHP;
+        if (gaugeText != null) gaugeText.fillAmount = gauge/maxGauge;
     }
 }

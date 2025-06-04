@@ -95,6 +95,7 @@ public class SceneLoader : MonoBehaviour
     IEnumerator LoadSceneAsync(string nextSceneName, string loadSceneName)
     {
 
+        // •Ï”‰Šú‰»
         percent = 0;
         LoadFlagsReset();
 
