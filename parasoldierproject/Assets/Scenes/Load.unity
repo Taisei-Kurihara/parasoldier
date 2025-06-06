@@ -520,7 +520,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 349627147}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 345a0c7e804e4e142ad56613dab4dfbb, type: 3}
+  m_Script: {fileID: 11500000, guid: ad25877ed701328408a3f00fdec15170, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   canvasGroup: {fileID: 1577524425}
