@@ -11,7 +11,7 @@ using Unity.VisualScripting;
 
 public enum ImplementedPlayerCharacter
 {
-    
+    PlayerTestCharacter = 0,
 }
 
 public class CreativeDestructionManager : MonoBehaviour
@@ -134,8 +134,10 @@ public class CreativeDestructionManager : MonoBehaviour
         await handle;
         if (handle.Status == AsyncOperationStatus.Succeeded)
         {
+            Debug.Log($"Successfully loaded: {addressKey}");
             while (Enum.IsDefined(typeof(ImplementedPlayerCharacter), i))
             {
+                Debug.Log($"Loading character {i} from address: {addressKey}");
                 GameObject prefab = handle.Result;
                 GameObject instance = Instantiate(prefab, mainCanvas.transform);
                 SelectButton selectButton = instance.GetComponent<SelectButton>();
