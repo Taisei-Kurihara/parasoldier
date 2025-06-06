@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 468a46d0ae32c3544b7d98094e6448a9, type: 3}
   m_Name: AddressableAssetSettings
   m_EditorClassIdentifier: 
-  m_DefaultGroup: 5f1cd38b857718f4593234e808fa9162
+  m_DefaultGroup: edb9bf7b0ac35534fa7cb0a2e85ed9cb
   m_currentHash:
     serializedVersion: 2
-    Hash: 00000000000000000000000000000000
+    Hash: fe653e899940f1f2a18d69b0a73dc7f5
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 0
   m_CatalogRequestsTimeout: 0
@@ -24,11 +24,11 @@ MonoBehaviour:
   m_InternalBundleIdMode: 1
   m_AssetLoadMode: 0
   m_BundledAssetProviderType:
-    m_AssemblyName: 
-    m_ClassName: 
+    m_AssemblyName: Unity.ResourceManager, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    m_ClassName: UnityEngine.ResourceManagement.ResourceProviders.BundledAssetProvider
   m_AssetBundleProviderType:
-    m_AssemblyName: 
-    m_ClassName: 
+    m_AssemblyName: Unity.ResourceManager, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    m_ClassName: UnityEngine.ResourceManagement.ResourceProviders.AssetBundleProvider
   m_IgnoreUnsupportedFilesInBuild: 0
   m_UniqueBundleIds: 0
   m_EnableJsonCatalog: 0
@@ -60,6 +60,7 @@ MonoBehaviour:
   m_overridePlayerVersion: '[UnityEditor.PlayerSettings.bundleVersion]'
   m_GroupAssets:
   - {fileID: 11400000, guid: e3d460f9c55cfaa4693d231ae14b86ca, type: 2}
+  - {fileID: 11400000, guid: cb81172cb95d5de4f81b0c4a484e0be9, type: 2}
   m_BuildSettings:
     m_LogResourceManagerExceptions: 1
     m_BundleBuildPath: Temp/com.unity.addressables/AssetBundles
@@ -108,7 +109,7 @@ MonoBehaviour:
     m_ClassName: 
   m_ActivePlayerDataBuilderIndex: 2
   m_DataBuilders:
-  - {fileID: 11400000, guid: 2f5d8196c14ed7f41b2b5dad4297212e, type: 2}
-  - {fileID: 11400000, guid: 3bdec9eadb6cb0e45ade303c912f9c29, type: 2}
-  - {fileID: 11400000, guid: a85866841ca98bb4b965ec5127586ad7, type: 2}
+  - {fileID: 11400000, guid: 580a69375824f9d4a8ef8aa745208c4b, type: 2}
+  - {fileID: 11400000, guid: 82c3d6225266a4d42b11d94b70210a86, type: 2}
+  - {fileID: 11400000, guid: 034825ea8e050af47a62638c84140795, type: 2}
   m_ActiveProfileId: b09ab7bd8005ffc4ea3793e71b8df71a

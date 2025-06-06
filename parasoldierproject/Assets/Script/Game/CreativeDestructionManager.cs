@@ -115,7 +115,7 @@ public class CreativeDestructionManager : MonoBehaviour
     MainCanvas mainCanvas = null;
 
 
-    public MainCanvas MainCanvasData { get { return mainCanvas; } set { mainCanvas = (mainCanvas = null) ? null : mainCanvas; } }
+    public MainCanvas MainCanvasData { get { return mainCanvas; } set { mainCanvas = value; } }
 
     #region
 
@@ -125,8 +125,12 @@ public class CreativeDestructionManager : MonoBehaviour
         
         int i = 0;
 
+        Debug.Log("Starting player character menu setup...");
+
         await UniTask.WaitUntil(() => mainCanvas != null, cancellationToken: this.destroyCancellationToken);
         
+        Debug.Log("MainCanvas is ready, proceeding to load character buttons...");
+
         // selectボタンを生成する
         string addressKey = "key";
 
