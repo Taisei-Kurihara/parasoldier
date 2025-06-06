@@ -318,7 +318,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveData:
-    speed: 500
+    speed: 1000
 --- !u!114 &3737574871181484173
 MonoBehaviour:
   m_ObjectHideFlags: 0

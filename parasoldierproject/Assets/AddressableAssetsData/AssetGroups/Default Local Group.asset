@@ -13,21 +13,21 @@ MonoBehaviour:
   m_Name: Default Local Group
   m_EditorClassIdentifier: 
   m_GroupName: Default Local Group
-  m_GUID: 5f1cd38b857718f4593234e808fa9162
+  m_GUID: edb9bf7b0ac35534fa7cb0a2e85ed9cb
   m_SerializeEntries:
-  - m_GUID: a3739aad78bb9e4488cee6283dbcbe43
+  - m_GUID: 7b934cc15a27ee54d8c81b7d89796869
     m_Address: key
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: a39aef958d2dbfa4d8eb508a0801d0a0
+  - m_GUID: b660b399a4a4e2b43ad7796e891ea740
     m_Address: PlayerTestCharacter
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
-  m_Settings: {fileID: 11400000, guid: 3a059a955bcd13a4a9140201087b494d, type: 2}
+  m_Settings: {fileID: 11400000, guid: abbfb515ebe231943bb1d7fad87a3c93, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 5f310c42fc1dfcf43b6e534158a557ea, type: 2}
-    - {fileID: 11400000, guid: 945464d42aef71047bc69ae2ba792fff, type: 2}
+    - {fileID: 11400000, guid: 1b023542d21561d479002d1ed09cf458, type: 2}
+    - {fileID: 11400000, guid: f5ffb31f9c33c8348be36ccf55c69331, type: 2}
