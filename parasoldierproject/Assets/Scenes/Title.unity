@@ -313,10 +313,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u30D1\u30E9\u30BD\u30EB\u30B8\u30E3\u30FC"
+  m_text: parasoldier
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 6198922aace6f9b4f9d2969615a37964, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 6198922aace6f9b4f9d2969615a37964, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0f562a6ebd37fef469f5918de286353c, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 0f562a6ebd37fef469f5918de286353c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -350,7 +350,7 @@ MonoBehaviour:
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 1024
   m_textAlignment: 65535
-  m_characterSpacing: -20
+  m_characterSpacing: -5.49
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -362,7 +362,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -724,8 +724,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: start
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0f562a6ebd37fef469f5918de286353c, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 0f562a6ebd37fef469f5918de286353c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -932,7 +932,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1553079233}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: be9d3910c95d080459a8294adbf95a19, type: 3}
+  m_Script: {fileID: 11500000, guid: f0f4c658c40155542887b82386fe6c7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   sceneName: 1
