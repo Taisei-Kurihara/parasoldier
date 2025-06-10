@@ -6,18 +6,25 @@ using System.Collections;
 public class SelectButton : MonoBehaviour
 {
     int Num = 0; // ボタンの番号
-    BitArray isSelected = new BitArray(1,false); // ボタンが選択されているかどうか
+    public int GetNum { get { return Num; } }
+    BitArray isSelected = new BitArray(1, false); // ボタンが選択されているかどうか
 
     public void Init(int Num)
     {
         this.Num = Num;
-        AwaitButton();
+        if (Num != 0) { AwaitButton(); }
+        else
+        {
+            GetComponent<Button>().image.color = Color.gray;
+        }
     }
 
-    void AwaitButton()
+    public void AwaitButton()
     {
+        GetComponent<Button>().image.color = Color.white; // ボタンの色を白に設定
         GetComponent<Button>().OnClickAsObservable()
-            .Subscribe(button => { })
+            .Take(1)
+            .Subscribe(button => { GetComponent<Button>().image.color = Color.gray; CreativeDestructionManager.Instance.NowSelectButton = this; })
             .AddTo(this);
     }
 }

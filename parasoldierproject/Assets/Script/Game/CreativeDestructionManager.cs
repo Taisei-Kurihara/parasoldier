@@ -3,7 +3,6 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using Cysharp.Threading.Tasks;
 using System.Collections;
-using static UnityEngine.Rendering.DebugUI.Table;
 using System;
 using UnityEngine.SceneManagement;
 using UnityEngine.Windows;
@@ -45,10 +44,10 @@ public class CreativeDestructionManager : MonoBehaviour
             return;
         }
         instance = this;
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
 
 #if UNITY_EDITOR
-        DebugSceneCheck();
+        //DebugSceneCheck();
 #endif
     }
     #endregion
@@ -89,6 +88,8 @@ public class CreativeDestructionManager : MonoBehaviour
 
         mainCanvas = null;
 
+        Debug.Log($"WhatToDoNow called with sceneName: {sceneName}");
+
         if (sceneName == SceneName.Title.ToString())
         {
             loader.Loadended();
@@ -99,6 +100,7 @@ public class CreativeDestructionManager : MonoBehaviour
         }
         else if (sceneName == SceneName.Game.ToString())
         {
+            StartGameObjectSet().Forget();
         }
         else if(sceneName == SceneName.Result.ToString())
         {
@@ -111,9 +113,11 @@ public class CreativeDestructionManager : MonoBehaviour
     CreativeCharacterAndStageDatas Datas;
     int playerCharacterIndex = 0; // プレイヤーキャラクターのインデックス
 
+    SelectButton nowSelectButton = null; // 現在選択されているボタン
+    public SelectButton NowSelectButton { get { return nowSelectButton; } set { nowSelectButton.AwaitButton(); nowSelectButton = value; playerCharacterIndex = value.GetNum; } }
+
 
     MainCanvas mainCanvas = null;
-
 
     public MainCanvas MainCanvasData { get { return mainCanvas; } set { mainCanvas = value; } }
 
@@ -122,13 +126,13 @@ public class CreativeDestructionManager : MonoBehaviour
     /// <summary> selectボタンの生成配置 /// </summary>
     async UniTask StartPlayerCharacterMenu()
     {
-        
+
         int i = 0;
 
         Debug.Log("Starting player character menu setup...");
 
         await UniTask.WaitUntil(() => mainCanvas != null, cancellationToken: this.destroyCancellationToken);
-        
+
         Debug.Log("MainCanvas is ready, proceeding to load character buttons...");
 
         // selectボタンを生成する
@@ -147,6 +151,10 @@ public class CreativeDestructionManager : MonoBehaviour
                 SelectButton selectButton = instance.GetComponent<SelectButton>();
 
                 selectButton.Init(i);
+                if (i == 0)
+                {
+                    nowSelectButton = selectButton;
+                }
                 i++;
             }
         }
@@ -195,6 +203,14 @@ public class CreativeDestructionManager : MonoBehaviour
     #endregion
 
 
+    async UniTask StartGameObjectSet()
+    {
+        SceneLoader loader = SceneLoader.Instance;
+
+
+
+        loader.Loadended();
+    }
 }
 
 public class CreativeCharacterAndStageDatas

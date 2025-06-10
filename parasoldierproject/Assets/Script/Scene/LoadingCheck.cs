@@ -44,7 +44,7 @@ public class LoadingCheck : MonoBehaviour
         loader.LoadUIAllSet();
 
         // ローディング%画面処理 ------------------------------------------------------------------
-        while (!loader.CheckLoadended && !Display(loader.Percent)) { yield return new WaitForSeconds(1 / 60); }
+        while (!loader.CheckLoadended || !Display(loader.Percent)) { yield return new WaitForSeconds(1 / 60); }
 
         // フェードアウト処理 --------------------------------------------------------------------
         yield return Fade(fadeoutTime, FadeType.FadeOut);
