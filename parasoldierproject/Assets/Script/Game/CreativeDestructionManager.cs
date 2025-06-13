@@ -21,7 +21,8 @@ public enum ImplementedEnemyCharacter
 public enum SelectStage
 {
     Identity,
-    TestStage
+    TestStage,
+    RojouStage
 }
 
 public class CreativeDestructionManager : MonoBehaviour

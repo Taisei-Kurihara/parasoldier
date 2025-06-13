@@ -20,6 +20,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5504beabc88a6304bb8190841b5586f1
+    m_Address: RojouStage
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7b934cc15a27ee54d8c81b7d89796869
     m_Address: selectButton
     m_ReadOnly: 0
