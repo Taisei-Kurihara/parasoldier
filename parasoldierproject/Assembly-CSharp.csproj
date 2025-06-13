@@ -77,6 +77,7 @@
     <Compile Include="Assets\Script\Scene\LoadingCheck.cs" />
     <Compile Include="Assets\Script\Game\PlayerInputMoveAction.cs" />
     <Compile Include="Assets\Script\Game\CharacterMove.cs" />
+    <Compile Include="Assets\Script\Game\CharacterAndStageGenerator.cs" />
     <Compile Include="Assets\Script\Game\CharacterResponseInput.cs" />
     <Compile Include="Assets\Script\Game\MainCanvas.cs" />
   </ItemGroup>

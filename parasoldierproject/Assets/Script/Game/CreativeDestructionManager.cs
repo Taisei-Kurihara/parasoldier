@@ -13,6 +13,17 @@ public enum ImplementedPlayerCharacter
     PlayerTestCharacter = 0,
 }
 
+public enum ImplementedEnemyCharacter
+{
+    EnemyTestCharacter = 0,
+}
+
+public enum SelectStage
+{
+    Identity,
+    TestStage
+}
+
 public class CreativeDestructionManager : MonoBehaviour
 {
     #region singleton
@@ -80,7 +91,6 @@ public class CreativeDestructionManager : MonoBehaviour
     #region
 
     /// <summary> 次のscene読み込み時 特定の処理を行ってからloadを開けるようにする /// </summary>
-    /// <param name="sceneName"></param>
     public void WhatToDoNow(string sceneName)
     {
 
@@ -136,7 +146,7 @@ public class CreativeDestructionManager : MonoBehaviour
         Debug.Log("MainCanvas is ready, proceeding to load character buttons...");
 
         // selectボタンを生成する
-        string addressKey = "key";
+        string addressKey = "selectButton";
 
         AsyncOperationHandle<GameObject> handle = Addressables.LoadAssetAsync<GameObject>(addressKey);
         await handle;
@@ -187,11 +197,8 @@ public class CreativeDestructionManager : MonoBehaviour
 
     async UniTask StartAsync()
     {
-        var token = this.destroyCancellationToken;
-
         StartOrBackCheck[0] = true;
-        Datas = new CreativeCharacterAndStageDatas(new string[0], new string[0], Enum.ToObject(typeof(ImplementedPlayerCharacter), playerCharacterIndex).ToString());
-
+   
         SceneLoader.Instance.LoadNextScene(SceneName.Game.ToString());
     }
 
@@ -203,11 +210,38 @@ public class CreativeDestructionManager : MonoBehaviour
     #endregion
 
 
+    /// <summary> ゲーム開始時生成処理 </summary>
     async UniTask StartGameObjectSet()
     {
+        // Gameシーンを取得してアクティブにする（すでにロード済みであることが前提）
+        Scene gameScene = SceneManager.GetSceneByName("Game");
+        if (gameScene.IsValid() && gameScene.isLoaded)
+        {
+            SceneManager.SetActiveScene(gameScene);
+        }
+        else
+        {
+            Debug.LogError("Gameシーンがロードされていません。");
+            return;
+        }
+
         SceneLoader loader = SceneLoader.Instance;
 
+        string addressKey = "CharacterAndStageManager";
 
+        AsyncOperationHandle<GameObject> handle = Addressables.LoadAssetAsync<GameObject>(addressKey);
+        await handle;
+
+        GameObject generator = Instantiate(handle.Result, Vector3.up, Quaternion.identity);
+
+
+        int count = Enum.GetValues(typeof(ImplementedEnemyCharacter)).Length;
+
+        generator.GetComponent<CharacterAndStageGenerator>().SetfightDatas = new CreativeCharacterAndStageDatas(
+            SelectStage.Identity,
+            new[] { ImplementedEnemyCharacter.EnemyTestCharacter },
+            (ImplementedPlayerCharacter)Enum.ToObject(typeof(ImplementedPlayerCharacter), playerCharacterIndex)
+        ); ;
 
         loader.Loadended();
     }
@@ -215,16 +249,16 @@ public class CreativeDestructionManager : MonoBehaviour
 
 public class CreativeCharacterAndStageDatas
 {
-    string[] stageName;
-    string playerCharacterName;
-    string[] enemyCharacterNames;
+    SelectStage stageName;
+    ImplementedPlayerCharacter playerCharacterName;
+    ImplementedEnemyCharacter[] enemyCharacterNames;
 
-    public string[] StageName => stageName;
-    public string PlayerCharacterName => playerCharacterName;
-    public string[] EnemyCharacterNames => enemyCharacterNames;
+    public SelectStage StageName { get { return stageName; } }
+    public ImplementedPlayerCharacter PlayerCharacterName { get { return playerCharacterName; } }
+    public ImplementedEnemyCharacter[] EnemyCharacterNames { get { return enemyCharacterNames; } }
 
 
-    public CreativeCharacterAndStageDatas(string[] stageName,string[] EnemyCharacterNames, string playerCharacterNames)
+    public CreativeCharacterAndStageDatas(SelectStage stageName, ImplementedEnemyCharacter[] EnemyCharacterNames, ImplementedPlayerCharacter playerCharacterNames)
     {
         this.stageName = stageName;
         this.playerCharacterName = playerCharacterNames;

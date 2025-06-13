@@ -15,13 +15,28 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: edb9bf7b0ac35534fa7cb0a2e85ed9cb
   m_SerializeEntries:
+  - m_GUID: 3162c2f02c3021d429d161cedc7df6d7
+    m_Address: CharacterAndStageManager
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7b934cc15a27ee54d8c81b7d89796869
-    m_Address: key
+    m_Address: selectButton
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b4d7f63497319974d88a4aecd4d4fc0a
+    m_Address: EnemyTestCharacter
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b660b399a4a4e2b43ad7796e891ea740
     m_Address: PlayerTestCharacter
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: be571b4fc0330be4c8633530a159430b
+    m_Address: TestStage
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

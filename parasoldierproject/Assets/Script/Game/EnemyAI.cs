@@ -8,6 +8,10 @@ public enum enemyAILv
 
 public class EnemyAI : MonoBehaviour
 {
+    [SerializeField]
+    SelectStage identityStage = SelectStage.TestStage;
+    public SelectStage IdentityStage { get { return identityStage; } }
+
     CharacterMove characterMove;
 
     private void Awake()
