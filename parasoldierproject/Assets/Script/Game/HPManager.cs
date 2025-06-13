@@ -19,10 +19,10 @@ public class HPManager : MonoBehaviour
     [SerializeField]
     Image P2gauge; // HPï\é¶UI
 
-    const float maxHp = 100f; // ç≈ëÂHP
+    public const float maxHp = 100f; // ç≈ëÂHP
 
-    public ReactiveProperty<float> p1Hp { get; private set; } = new(100);
-    public ReactiveProperty<float> p2Hp { get; private set; } = new(100);
+    public ReactiveProperty<float> p1Hp { get; private set; } = new(maxHp);
+    public ReactiveProperty<float> p2Hp { get; private set; } = new(maxHp);
     public ReactiveProperty<int> orHPzero { get; private set; } = new(0);
 
     private void Awake()

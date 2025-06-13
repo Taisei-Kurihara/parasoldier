@@ -1,21 +1,15 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerInputMoveAction : MonoBehaviour
+public class PlayerInputMoveAction : CharacterResponseInput
 {
     SystemInput systemInput;
-    CharacterMove characterMove;
 
-    private void Awake()
+    protected override void AwakeInit()
     {
-        systemInput = GetComponent<SystemInput>();
-        characterMove = GetComponent<CharacterMove>();
 
-        if (systemInput == null || characterMove == null)
-        {
-            Debug.LogError("PlayerInputMoveAction requires SystemInput and CharacterMove components.");
-            return;
-        }
+        systemInput = GetComponent<SystemInput>();
+
         systemInput.Init();
         systemInput.MethodSetting(PlayerInputNames.Move, ActionSettype.plus, OnMove, OutMove);
     }

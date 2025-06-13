@@ -15,11 +15,6 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: edb9bf7b0ac35534fa7cb0a2e85ed9cb
   m_SerializeEntries:
-  - m_GUID: 3162c2f02c3021d429d161cedc7df6d7
-    m_Address: CharacterAndStageManager
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5504beabc88a6304bb8190841b5586f1
     m_Address: RojouStage
     m_ReadOnly: 0

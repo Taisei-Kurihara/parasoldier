@@ -7,6 +7,9 @@ using UnityEngine;
 /// <summary> キャラクタの動きだけを管理する </summary>
 public class CharacterMove : MonoBehaviour
 {
+    [SerializeField]
+    Animator animator;
+
     CancellationToken token;
     Rigidbody rigidbody;
 
@@ -31,7 +34,8 @@ public class CharacterMove : MonoBehaviour
     {
         token = this.GetCancellationTokenOnDestroy();
         rigidbody = GetComponent<Rigidbody>();
-        
+
+        if (rigidbody == null) { Debug.LogError(gameObject.name + ":none rb"); }
 
         Init();
     }
@@ -64,6 +68,39 @@ public class CharacterMove : MonoBehaviour
     }
 
     #endregion
+
+    public void DamageReaction()
+    {
+
+    }
+    void Update()
+    {
+        int layer = 0;
+        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(layer);
+        AnimatorStateInfo nextStateInfo = animator.GetNextAnimatorStateInfo(layer);
+        AnimatorTransitionInfo transInfo = animator.GetAnimatorTransitionInfo(layer);
+
+        if (animator.IsInTransition(layer))
+        {
+            // トランジション中。複数クリップが混ざっている可能性がある
+            var currentClips = animator.GetCurrentAnimatorClipInfo(layer);
+            var nextClips = animator.GetNextAnimatorClipInfo(layer);
+            // currentClips[0].clip と nextClips[0].clip の両方が存在する可能性
+            Debug.Log($"Transition: from {stateInfo.shortNameHash} to {nextStateInfo.shortNameHash}");
+            foreach (var ci in currentClips)
+                Debug.Log("  current clip: " + ci.clip.name);
+            foreach (var ni in nextClips)
+                Debug.Log("  next clip: " + ni.clip.name);
+        }
+        else
+        {
+            // 通常再生中
+            var clipInfos = animator.GetCurrentAnimatorClipInfo(layer);
+            if (clipInfos.Length > 0)
+                Debug.Log("現在のクリップ: " + clipInfos[0].clip.name);
+        }
+    }
+
 }
 
 

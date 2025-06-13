@@ -12,8 +12,11 @@ public enum PlayerInputNames
 {
     Set = 32,
     Move = 0,
-    Look = 1,
-    Jump = 2
+    Attack = 1,
+    WaterShot = 2,
+    Charge = 3,
+    Assault = 4,
+    Guard = 5
 }
 
 public enum ActionSettype

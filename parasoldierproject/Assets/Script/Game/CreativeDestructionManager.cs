@@ -228,17 +228,9 @@ public class CreativeDestructionManager : MonoBehaviour
 
         SceneLoader loader = SceneLoader.Instance;
 
-        string addressKey = "CharacterAndStageManager";
-
-        AsyncOperationHandle<GameObject> handle = Addressables.LoadAssetAsync<GameObject>(addressKey);
-        await handle;
-
-        GameObject generator = Instantiate(handle.Result, Vector3.up, Quaternion.identity);
-
-
         int count = Enum.GetValues(typeof(ImplementedEnemyCharacter)).Length;
 
-        generator.GetComponent<CharacterAndStageGenerator>().SetfightDatas = new CreativeCharacterAndStageDatas(
+        CharacterAndStageGenerator.Instance.SetfightDatas = new CreativeCharacterAndStageDatas(
             SelectStage.Identity,
             new[] { ImplementedEnemyCharacter.EnemyTestCharacter },
             (ImplementedPlayerCharacter)Enum.ToObject(typeof(ImplementedPlayerCharacter), playerCharacterIndex)
