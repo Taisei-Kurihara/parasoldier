@@ -15,8 +15,8 @@ public abstract class CharacterResponseInput : MonoBehaviour
 
     protected abstract void AwakeInit();
 
-
-    public ReactiveProperty<float> hp = new ReactiveProperty<float>();
+    [HideInInspector]
+    public ReactiveProperty<float> hp = new ReactiveProperty<float>(100);
 
     public void DamageReaction(float damage)
     {

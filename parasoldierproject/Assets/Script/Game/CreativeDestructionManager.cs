@@ -214,29 +214,29 @@ public class CreativeDestructionManager : MonoBehaviour
     /// <summary> ゲーム開始時生成処理 </summary>
     async UniTask StartGameObjectSet()
     {
-        // Gameシーンを取得してアクティブにする（すでにロード済みであることが前提）
+
         Scene gameScene = SceneManager.GetSceneByName("Game");
-        if (gameScene.IsValid() && gameScene.isLoaded)
+
+        // ロード済みになるまで待機
+        while (!gameScene.isLoaded)
         {
-            SceneManager.SetActiveScene(gameScene);
+            await UniTask.Yield();
         }
-        else
-        {
-            Debug.LogError("Gameシーンがロードされていません。");
-            return;
-        }
+
+        // ゲームシーンがロードされたら、アクティブにする
+        SceneManager.SetActiveScene(gameScene);
 
         SceneLoader loader = SceneLoader.Instance;
 
         int count = Enum.GetValues(typeof(ImplementedEnemyCharacter)).Length;
 
-        CharacterAndStageGenerator.Instance.SetfightDatas = new CreativeCharacterAndStageDatas(
+        CharacterAndStageGenerator.Instance.FightSetUp(new CreativeCharacterAndStageDatas(
             SelectStage.Identity,
-            new[] { ImplementedEnemyCharacter.EnemyTestCharacter },
+            new ImplementedEnemyCharacter[1] { ImplementedEnemyCharacter.EnemyTestCharacter },
             (ImplementedPlayerCharacter)Enum.ToObject(typeof(ImplementedPlayerCharacter), playerCharacterIndex)
-        ); ;
-
-        loader.Loadended();
+        ));
+ 
+        //loader.Loadended();
     }
 }
 

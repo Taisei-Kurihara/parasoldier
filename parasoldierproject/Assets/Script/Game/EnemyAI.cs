@@ -25,6 +25,8 @@ public class EnemyAI : CharacterResponseInput
             case enemyAILv.Approach:
                 Approach().Forget();
                 break;
+            default:
+                break;
         }
     }
 
