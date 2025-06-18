@@ -14,21 +14,37 @@ public class CharacterMove : MonoBehaviour
     Rigidbody rigidbody;
 
     #region 入力管理
-    /// <summary> 入力管理 </summary>
-    BitArray acceptInput = new BitArray(2, false);
 
     #region 移動入力管理
-    /// <summary> 現在移動中かどうか </summary>
-    public bool NowMove { get { return acceptInput[0]; } }
-    private bool SetNowMove { set { acceptInput[0] = value; } }
+
+    BitArray moveInput = new BitArray(3, false);
+
+    /// <summary> 現在移動入力中かどうか </summary>
+    public bool NowMoveInput { get { return moveInput[0]; } }
+    private bool SetNowMoveInput { set { moveInput[0] = value; } }
+
+
+    /// <summary> 戦闘前or決着後に動けなくする用 </summary>
+    public bool OperatingMovable { get { return moveInput[1]; } }
+    private void PermissionNotMovable() { moveInput[1] = false; }
+    private void PermissionMovable() { moveInput[1] = true; }
+
 
     /// <summary> 移動可能な状態か確認する </summary>
-    public bool CanItBeMoved { get { return acceptInput[1]; } }
-    private void UnMove() { acceptInput[1] = false; }
-    private void OnMove() { acceptInput[1] = true; }
+    public bool CanItBeMoved { get { return moveInput[2]; } }
+    private void UnMove() { moveInput[2] = false; }
+    private void OnMove() { moveInput[2] = true; }
+    #endregion
+
+    #region 攻撃入力管理
+    BitArray attackInput = new BitArray(2, false);
+
+
+
     #endregion
 
     #endregion
+
 
     private void Awake()
     {
@@ -45,9 +61,12 @@ public class CharacterMove : MonoBehaviour
         OnMove();
 
         moveData.moveDis
-            .Subscribe(_ => { if (!NowMove) { MoveAsync().Forget(); } } )
+            .Subscribe(_ => { if (!NowMoveInput) { MoveAsync().Forget(); } } )
             .AddTo(this);
+
     }
+
+
 
     #region 移動処理
 
@@ -56,21 +75,47 @@ public class CharacterMove : MonoBehaviour
 
     async UniTask MoveAsync()
     {
-        SetNowMove = true;
+        SetNowMoveInput = true;
 
         while (moveData.moveDis.Value != 0)
         {
-            if ((CanItBeMoved || moveData.moveDis.Value == 0))
+            if (CanItBeMoved)
             {
+                animator.SetBool("isWalk", true);
                 rigidbody.linearVelocity = ((Vector3.right * moveData.moveDis.Value) * moveData.Speed) * Time.deltaTime;
+            }
+            else
+            {
+                animator.speed = 0;
+                animator.SetBool("isWalk", false);
             }
 
             await UniTask.Yield(token);
         }
 
         rigidbody.linearVelocity = Vector3.zero;
+        animator.SetBool("isWalk", false);
 
-        SetNowMove = false; // 移動が完了したら移動中フラグを下ろす
+        SetNowMoveInput = false; // 移動が完了したら移動中フラグを下ろす
+    }
+
+
+
+    #endregion
+
+    #region 攻撃処理
+
+    public void Attack()
+    {
+        Attackasync().Forget();
+    }
+
+    async UniTask Attackasync()
+    {
+        // 攻撃処理
+        animator.SetTrigger("attack");
+        await UniTask.Yield(token);
+        await UniTask.Delay(1000, cancellationToken: token); // 攻撃アニメーションの再生時間に合わせて待機
     }
 
     #endregion
@@ -78,6 +123,16 @@ public class CharacterMove : MonoBehaviour
     public void DamageReaction()
     {
 
+    }
+
+    private void Update()
+    {
+        AnimatorClipInfo[] clipInfos = animator.GetCurrentAnimatorClipInfo(0);
+        if (clipInfos.Length > 0)
+        {
+            string clipName = clipInfos[0].clip.name;
+            Debug.Log($"Now playing clip : {clipName}");
+        }
     }
 }
 

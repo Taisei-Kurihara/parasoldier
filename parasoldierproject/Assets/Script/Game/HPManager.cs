@@ -51,6 +51,12 @@ public class HPManager : MonoBehaviour
             .AddTo(this);
     }
 
+    public void ResetHP()
+    {
+        p1Hp.Value = maxHp; // プレイヤー1のHPをリセット
+        p2Hp.Value = maxHp; // プレイヤー2のHPをリセット
+        orHPzero.Value = 0; // フラグをリセット
+    }
 
 
 }

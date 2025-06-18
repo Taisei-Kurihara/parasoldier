@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Script\Game\EnemyAI.cs" />
+    <Compile Include="Assets\Script\Game\GameSetUp_FlowManager.cs" />
     <Compile Include="Assets\Script\Scene\SceneLoader.cs" />
     <Compile Include="Assets\Script\Select\BackButton.cs" />
     <Compile Include="Assets\InputSystems\InputSetList.cs" />
@@ -77,7 +78,6 @@
     <Compile Include="Assets\Script\Scene\LoadingCheck.cs" />
     <Compile Include="Assets\Script\Game\PlayerInputMoveAction.cs" />
     <Compile Include="Assets\Script\Game\CharacterMove.cs" />
-    <Compile Include="Assets\Script\Game\CharacterAndStageGenerator.cs" />
     <Compile Include="Assets\Script\Game\CharacterResponseInput.cs" />
     <Compile Include="Assets\Script\Game\MainCanvas.cs" />
   </ItemGroup>

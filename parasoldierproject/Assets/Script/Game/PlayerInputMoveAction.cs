@@ -12,6 +12,7 @@ public class PlayerInputMoveAction : CharacterResponseInput
 
         systemInput.Init();
         systemInput.MethodSetting(PlayerInputNames.Move, ActionSettype.plus, OnMove, OutMove);
+        systemInput.MethodSetting(PlayerInputNames.Attack, ActionSettype.plus, OnAttack);
     }
 
     public void OnMove(InputAction.CallbackContext context)
@@ -22,5 +23,10 @@ public class PlayerInputMoveAction : CharacterResponseInput
     public void OutMove(InputAction.CallbackContext context)
     {
         characterMove.moveData.moveDis.Value = 0;
+    }
+
+    public void OnAttack(InputAction.CallbackContext context)
+    {
+        characterMove.Attack();
     }
 }

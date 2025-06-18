@@ -230,7 +230,7 @@ public class CreativeDestructionManager : MonoBehaviour
 
         int count = Enum.GetValues(typeof(ImplementedEnemyCharacter)).Length;
 
-        CharacterAndStageGenerator.Instance.FightSetUp(new CreativeCharacterAndStageDatas(
+        GameSetUp_FlowManager.Instance.FightSetUp(new CreativeCharacterAndStageDatas(
             SelectStage.Identity,
             new ImplementedEnemyCharacter[1] { ImplementedEnemyCharacter.EnemyTestCharacter },
             (ImplementedPlayerCharacter)Enum.ToObject(typeof(ImplementedPlayerCharacter), playerCharacterIndex)
