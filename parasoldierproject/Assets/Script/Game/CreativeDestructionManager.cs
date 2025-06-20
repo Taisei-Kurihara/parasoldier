@@ -140,11 +140,7 @@ public class CreativeDestructionManager : MonoBehaviour
 
         int i = 0;
 
-        Debug.Log("Starting player character menu setup...");
-
         await UniTask.WaitUntil(() => mainCanvas != null, cancellationToken: this.destroyCancellationToken);
-
-        Debug.Log("MainCanvas is ready, proceeding to load character buttons...");
 
         // selectボタンを生成する
         string addressKey = "selectButton";

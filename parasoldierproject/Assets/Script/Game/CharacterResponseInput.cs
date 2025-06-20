@@ -21,7 +21,7 @@ public abstract class CharacterResponseInput : MonoBehaviour
     public void DamageReaction(float damage)
     {
         hp.Value -= damage;
-        characterMove.DamageReaction();
+        characterMove.DamageReaction().Forget();
     }
 
 }

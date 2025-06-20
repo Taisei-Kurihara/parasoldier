@@ -4,6 +4,18 @@ using Cysharp.Threading.Tasks;
 using UniRx;
 using UnityEngine;
 
+public enum CharacterState
+{
+    Idle,
+    Move,
+    Attack,
+    WaterShot,
+    Charge,
+    Assault,
+    Guard,
+    DamageReaction
+}
+
 /// <summary> キャラクタの動きだけを管理する </summary>
 public class CharacterMove : MonoBehaviour
 {
@@ -20,8 +32,8 @@ public class CharacterMove : MonoBehaviour
 
     /// <summary> 戦闘前or決着後に動けなくする用 </summary>
     public bool inputFailure { get { return generalOrder[0]; } }
-    private void unlockInput() { generalOrder[0] = false; }
-    private void disableInput() { generalOrder[0] = true; }
+    private void UnlockInput() { generalOrder[0] = false; }
+    private void DisableInput() { generalOrder[0] = true; }
 
     // / <summary> 入力割り込みできるか </summary>
     public bool Interrupt { get { return generalOrder[1]; } set { generalOrder[1] = value; } }
@@ -46,7 +58,7 @@ public class CharacterMove : MonoBehaviour
     #region 攻撃入力管理
     BitArray attackInput = new BitArray(2, false);
 
-
+    public bool attack_01 { get { return attackInput[0]; } set { attackInput[0] = value; } }
 
     #endregion
 
@@ -63,10 +75,10 @@ public class CharacterMove : MonoBehaviour
         Init();
     }
 
+
     public void Init()
     {
-        OnMove();
-        unlockInput();
+        UnlockInput();
         moveData.moveDis
             .Subscribe(_ => { if (!NowMoveInput) { MoveAsync().Forget(); } } )
             .AddTo(this);
@@ -86,28 +98,21 @@ public class CharacterMove : MonoBehaviour
 
         while (moveData.moveDis.Value != 0)
         {
-            if (CanItBeMoved)
+            if (CanItBeMoved || Interrupt)
             {
-                animator.SetBool("isWalk", true);
                 rigidbody.linearVelocity = ((Vector3.right * moveData.moveDis.Value) * moveData.Speed) * Time.deltaTime;
             }
-            else
-            {
-                animator.speed = 0;
-                animator.SetBool("isWalk", false);
-            }
+
+            animator.SetBool("isWalk", (CanItBeMoved || Interrupt));
+
 
             await UniTask.Yield(token);
         }
 
-        rigidbody.linearVelocity = Vector3.zero;
         animator.SetBool("isWalk", false);
 
         SetNowMoveInput = false; // 移動が完了したら移動中フラグを下ろす
     }
-
-
-
     #endregion
 
     #region 攻撃処理
@@ -130,9 +135,11 @@ public class CharacterMove : MonoBehaviour
 
     #endregion
 
-    public void DamageReaction()
+    public async UniTask DamageReaction()
     {
-
+        Interrupt = false;
+        await UniTask.Yield(token);
+        Interrupt = true;
     }
 
     private void Update()

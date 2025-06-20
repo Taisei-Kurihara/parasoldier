@@ -43,6 +43,7 @@ public class GameManager : MonoBehaviour
 
     private void HpZeroCheck()
     {
+        // UNIRX
         hpManager.orHPzero
             .Take(1) // 1‰ñ‚¾‚¯w“Ç
             .Subscribe(isZero =>
