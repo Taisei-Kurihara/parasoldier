@@ -2,6 +2,7 @@ using System.Collections;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UniRx;
+using UniRx.Triggers;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -23,8 +24,12 @@ public class CharacterMove : MonoBehaviour
     [SerializeField]
     Animator animator;
 
+    [SerializeField]
+    Collider attackColl;
+
     CancellationToken token;
     Rigidbody rigidbody;
+
 
     #region 入力管理
 
@@ -59,9 +64,19 @@ public class CharacterMove : MonoBehaviour
     #endregion
 
     #region 攻撃入力管理
-    BitArray attackInput = new BitArray(2, false);
 
-    public bool attack_01 { get { return attackInput[0]; } set { attackInput[0] = value; } }
+    const int maxCombo = 3;
+
+    int nowComboIndex = 0; // 現在のコンボインデックス
+
+    void AttackComboReset() { nowComboIndex = 0; }
+
+    private int NowCombo { get { return (nowComboIndex + 1); } }
+
+    void NextCombo()
+    {
+        nowComboIndex = (nowComboIndex + 1) % maxCombo;
+    }
 
     #endregion
 
@@ -81,7 +96,11 @@ public class CharacterMove : MonoBehaviour
 
     public void Init()
     {
+        #region debug用初期化処理
         UnlockInput();
+        #endregion
+
+        AttackComboReset();
         moveData.moveDis
             .Subscribe(_ => { if (!NowMoveInput) { MoveAsync().Forget(); } } )
             .AddTo(this);
@@ -123,39 +142,105 @@ public class CharacterMove : MonoBehaviour
     }
     #endregion
 
+    async UniTask NonInterruptibleAction(UniTask innerTask)
+    {
+        Interrupt = false;
+        await innerTask.AttachExternalCancellation(token);
+        Interrupt = true;
+    }
     #region 攻撃処理
 
-    public void Attack()
+    public void AttackInput()
     {
-        if (Interrupt) Attackasync().Forget();
+        if (Interrupt)
+        {
+            AttackCombo().Forget();
+        }
+    }
+
+    async UniTask AttackCombo()
+    {
+        await NonInterruptibleAction(Attackasync());
+
+        NextCombo();
+
+        int num = NowCombo;
+        float startTime = Time.time;
+
+        Observable.EveryUpdate()
+            .Where(_ => num != NowCombo || Time.time - startTime >= 2)
+            .Take(1)
+            .Subscribe(_ =>
+            {
+                if(Time.time - startTime >= 2)
+                {
+                    AttackComboReset();
+                }
+                else
+                {
+                    Debug.Log("time:" + (Time.time - startTime).ToString("F2"));
+                }
+            })
+            .AddTo(this);
     }
 
     async UniTask Attackasync()
     {
-        Interrupt = false; // 攻撃中は入力割り込みを無効化
         // 攻撃処理
-        animator.SetTrigger("attack");
-        await UniTask.Yield(token);
+        Debug.Log("Attack Combo: " + NowCombo);
+        animator.SetTrigger("attack_01");
+        //animator.SetTrigger("attack_0" + NowCombo);
+        float startTime = Time.time;
+        bool isAttack = true;
+
+        var cancelStream = Observable.EveryUpdate()
+            .Where(_ => Time.time - startTime >= 1f || !isAttack); // 終了条件を明示
+
+        attackColl.OnTriggerEnterAsObservable()
+            .TakeUntil(cancelStream) // 終了条件を監視
+                    .Subscribe(col =>                           // 解除条件を満たす前だけ呼ばれる
+            {
+                CharacterResponseInput characterResponseInput = col.GetComponent<CharacterResponseInput>();
+                if (characterResponseInput != null)
+                {
+                    isAttack = false; // 一度攻撃が当たったら以降の攻撃は無効化
+                    characterResponseInput.DamageReaction(10f); // ここでダメージを与える
+                }
+            });
+
         await UniTask.Delay(1000, cancellationToken: token); // 攻撃アニメーションの再生時間に合わせて待機
-        Interrupt = true; // 攻撃が終わったら入力割り込みを有効化
     }
 
     #endregion
 
-    public async UniTask DamageReaction()
+    public void DamageReaction()
     {
-        Interrupt = false;
-        await UniTask.Yield(token);
-        Interrupt = true;
+        NonInterruptibleAction(DamageReactionAsync()).Forget();
     }
 
+    public async UniTask DamageReactionAsync()
+    {
+
+        animator.SetTrigger("DamageReact_01");
+
+        float startTime = Time.time;
+        while (Time.time - startTime < 2f)
+        {
+            if(Time.time - startTime < 1f)
+            {
+
+            }
+            await UniTask.Yield(token);
+        }
+
+    }
     private void Update()
     {
         AnimatorClipInfo[] clipInfos = animator.GetCurrentAnimatorClipInfo(0);
         if (clipInfos.Length > 0)
         {
             string clipName = clipInfos[0].clip.name;
-            Debug.Log($"Now playing clip : {clipName}");
+            //Debug.Log($"Now playing clip : {clipName}");
         }
     }
 }

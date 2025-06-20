@@ -27,6 +27,6 @@ public class PlayerInputMoveAction : CharacterResponseInput
 
     public void OnAttack(InputAction.CallbackContext context)
     {
-        characterMove.Attack();
+        characterMove.AttackInput();
     }
 }

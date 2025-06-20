@@ -70,8 +70,8 @@ Rigidbody:
   m_GameObject: {fileID: 3748500757404355536}
   serializedVersion: 4
   m_Mass: 1
-  m_Drag: 1.5
-  m_AngularDrag: 1.5
+  m_Drag: 10
+  m_AngularDrag: 10
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -195,6 +195,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 3717704612990027564}
+  attackColl: {fileID: 3093099095787831392}
   moveData:
     speed: 1000
 --- !u!114 &3737574871181484173
@@ -284,6 +285,11 @@ PrefabInstance:
 --- !u!4 &1166852963453928399 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5565707080649100987, guid: de3c4dd87a48931439838b024c052450, type: 3}
+  m_PrefabInstance: {fileID: 6704773044453231988}
+  m_PrefabAsset: {fileID: 0}
+--- !u!136 &3093099095787831392 stripped
+CapsuleCollider:
+  m_CorrespondingSourceObject: {fileID: 8638122553736154388, guid: de3c4dd87a48931439838b024c052450, type: 3}
   m_PrefabInstance: {fileID: 6704773044453231988}
   m_PrefabAsset: {fileID: 0}
 --- !u!95 &3717704612990027564 stripped
