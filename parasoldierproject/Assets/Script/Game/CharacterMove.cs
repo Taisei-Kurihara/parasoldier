@@ -2,6 +2,7 @@ using System.Collections;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UniRx;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum CharacterState
@@ -28,6 +29,8 @@ public class CharacterMove : MonoBehaviour
     #region “ü—ÍŠÇ—
 
     #region ‘S‘Ì
+    CharacterState NowState = CharacterState.Idle;
+
     BitArray generalOrder = new BitArray(2, true);
 
     /// <summary> í“¬‘OorŒˆ’…Œã‚É“®‚¯‚È‚­‚·‚é—p </summary>
@@ -36,7 +39,7 @@ public class CharacterMove : MonoBehaviour
     private void DisableInput() { generalOrder[0] = true; }
 
     // / <summary> “ü—ÍŠ„‚è‚İ‚Å‚«‚é‚© </summary>
-    public bool Interrupt { get { return generalOrder[1]; } set { generalOrder[1] = value; } }
+    public bool Interrupt { get { return (inputFailure) ? inputFailure:generalOrder[1]; } set { generalOrder[1] = value; } }
 
     #endregion
 
@@ -82,7 +85,6 @@ public class CharacterMove : MonoBehaviour
         moveData.moveDis
             .Subscribe(_ => { if (!NowMoveInput) { MoveAsync().Forget(); } } )
             .AddTo(this);
-
     }
 
 
@@ -100,6 +102,7 @@ public class CharacterMove : MonoBehaviour
         {
             if (CanItBeMoved || Interrupt)
             {
+                NowState = CharacterState.Move;
                 rigidbody.linearVelocity = ((Vector3.right * moveData.moveDis.Value) * moveData.Speed) * Time.deltaTime;
             }
 
@@ -107,6 +110,11 @@ public class CharacterMove : MonoBehaviour
 
 
             await UniTask.Yield(token);
+        }
+
+        if (CanItBeMoved || Interrupt)
+        {
+            NowState = CharacterState.Idle;
         }
 
         animator.SetBool("isWalk", false);
@@ -119,8 +127,7 @@ public class CharacterMove : MonoBehaviour
 
     public void Attack()
     {
-        if (inputFailure || !Interrupt) return; // “ü—Í‚ª–³Œø‰»‚³‚ê‚Ä‚¢‚éê‡‚ÍUŒ‚‚µ‚È‚¢
-        Attackasync().Forget();
+        if (Interrupt) Attackasync().Forget();
     }
 
     async UniTask Attackasync()
