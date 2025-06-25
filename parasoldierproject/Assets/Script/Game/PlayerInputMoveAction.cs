@@ -13,6 +13,7 @@ public class PlayerInputMoveAction : CharacterStatus
         systemInput.Init();
         systemInput.MethodSetting(PlayerInputNames.Move, ActionSettype.plus, OnMove, OutMove);
         systemInput.MethodSetting(PlayerInputNames.Attack, ActionSettype.plus, OnAttack);
+        systemInput.MethodSetting(PlayerInputNames.Assault, ActionSettype.plus, OnAssault);
     }
 
     public void OnMove(InputAction.CallbackContext context)
@@ -28,5 +29,15 @@ public class PlayerInputMoveAction : CharacterStatus
     public void OnAttack(InputAction.CallbackContext context)
     {
         characterMove.AttackInput();
+    }
+
+    public void OnWaterShot(InputAction.CallbackContext context)
+    {
+        characterMove.WaterShotInput();
+    }
+
+    public void OnAssault(InputAction.CallbackContext context)
+    {
+        characterMove.AssaultInput();
     }
 }

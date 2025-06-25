@@ -6,6 +6,7 @@ using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
 
+# region enum
 public enum CharacterState
 {
     Idle,
@@ -19,6 +20,7 @@ public enum CharacterState
     Guard,
     DamageReaction
 }
+#endregion
 
 /// <summary> キャラクタの動きだけを管理する </summary>
 public class CharacterMove : MonoBehaviour
@@ -29,15 +31,18 @@ public class CharacterMove : MonoBehaviour
     CancellationToken token;
     Rigidbody rigidbody;
 
+    #region モーションデータ
     [SerializeField] private AttackData attack01 = new AttackData(CharacterState.Attack_01);
     [SerializeField] private AttackData attack02 = new AttackData(CharacterState.Attack_02);
     [SerializeField] private AttackData attack03 = new AttackData(CharacterState.Attack_03);
     [SerializeField] private AttackData waterShot = new AttackData(CharacterState.WaterShot);
     [SerializeField] private AttackData assault = new AttackData(CharacterState.Assault);
+    #endregion
+
 
     #region 入力管理
 
-    #region 全体
+    #region 全体入力管理
     CharacterState NowState = CharacterState.Idle;
 
     BitArray generalOrder = new BitArray(2, true);
@@ -49,6 +54,8 @@ public class CharacterMove : MonoBehaviour
 
     // / <summary> 入力割り込みできるか </summary>
     public bool Interrupt { get { return (inputFailure) ? inputFailure:generalOrder[1]; } set { generalOrder[1] = value; } }
+    
+    CancellationTokenSource attackTokenSource = new(); // 攻撃中断用
 
     #endregion
 
@@ -86,7 +93,7 @@ public class CharacterMove : MonoBehaviour
 
     #endregion
 
-
+    #region 開始処理
     private void Awake()
     {
         token = this.GetCancellationTokenOnDestroy();
@@ -110,7 +117,7 @@ public class CharacterMove : MonoBehaviour
             .AddTo(this);
     }
 
-
+    #endregion
 
     #region 移動処理
 
@@ -145,28 +152,71 @@ public class CharacterMove : MonoBehaviour
     }
     #endregion
 
-    async UniTask NonInterruptibleAction(UniTask innerTask)
+
+    #region 共通メソッド
+    void NonInterruptCheck(UniTask innerTask)
+    {
+        if (Interrupt)
+        {
+            NonInterruptActionAsync(innerTask).Forget();
+        }
+    }
+
+    async UniTask NonInterruptActionAsync(UniTask innerTask)
     {
         Interrupt = false;
         await innerTask.AttachExternalCancellation(token);
         Interrupt = true;
     }
+
+
+    async UniTask PlayAttackMotion(AttackData attack)
+    {
+        attackTokenSource?.Cancel(); // 前回攻撃中断
+        attackTokenSource = new CancellationTokenSource();
+        CancellationToken attackToken = attackTokenSource.Token;
+
+        animator.SetTrigger(attack.MoveState.ToString());
+
+        attack.ActivateAll((col, spot) =>
+        {
+            Debug.Log("hit:" + col.name);
+            CharacterStatus characterResponseInput = col.GetComponent<CharacterStatus>();
+            if (characterResponseInput != null)
+            {
+                characterResponseInput.DamageReaction(spot.Damage, spot.BlowPower, spot.BlowTime);
+                attack.CancelAll();
+            }
+        });
+
+        await UniTask.Delay((int)(attack.NonInterruptTime * 1000), cancellationToken: attackToken);
+
+    }
+    #endregion
+
+
     #region 攻撃処理
 
     public void AttackInput()
     {
-        if (Interrupt)
-        {
-            AttackCombo().Forget();
-        }
+        NonInterruptCheck(AttackCombo());
     }
 
     async UniTask AttackCombo()
     {
-        await NonInterruptibleAction(Attackasync());
+        AttackData currentAttack = NowCombo switch
+        {
+            1 => attack01,
+            2 => attack02,
+            3 => attack03,
+            _ => attack01
+        };
+
+        await NonInterruptActionAsync(PlayAttackMotion(currentAttack));
 
         NextCombo();
 
+        #region コンボタイマー
         int num = NowCombo;
         float startTime = Time.time;
 
@@ -185,113 +235,69 @@ public class CharacterMove : MonoBehaviour
                 }
             })
             .AddTo(this);
-    }
-
-    async UniTask Attackasync()
-    {
-        Debug.Log("Attack Combo: " + NowCombo);
-
-        AttackData currentAttack = NowCombo switch
-        {
-            1 => attack01,
-            2 => attack02,
-            3 => attack03,
-            _ => attack01
-        };
-
-        animator.SetTrigger(currentAttack.MoveState.ToString());
-
-        currentAttack.ActivateAll((col, spot) =>
-        {
-            Debug.Log("hit:" + col.name);
-            CharacterStatus characterResponseInput = col.GetComponent<CharacterStatus>();
-            if (characterResponseInput != null)
-            {
-                currentAttack.CancelAll();
-                Debug.Log("characterResponseInput != null");
-                float damage = spot.Damage;
-                float blowPower = spot.BlowPower;
-                characterResponseInput.DamageReaction(damage);
-            }
-        });
-
-        await UniTask.Delay((int)(currentAttack.NonInterruptTime * 1000), cancellationToken: token);
+        #endregion
     }
 
 
 
+    #endregion
 
-    void Attackcolls(Collider[] attackColliders)
+    #region 水撃処理
+    public void WaterShotInput()
     {
-        ReactiveProperty<Collider> hitTarget = new ReactiveProperty<Collider>(null);
-        float startTime = Time.time;
-        bool isAttack = true;
+        NonInterruptCheck(PlayAttackMotion(waterShot));
+        
+    }
+    #endregion
 
-        // 終了トリガーの監視（1秒経過 or 攻撃済み）
-        var cancelStream = Observable.EveryUpdate()
-            .Where(_ => Time.time - startTime >= 1f || !isAttack);
+    #region 突進処理
+    public void AssaultInput()
+    {
+        NonInterruptCheck(PlayAttackMotion(assault));
+    }
+    #endregion
 
-        foreach (var c in attackColliders)
-        {
-            c.OnTriggerEnterAsObservable()
-            .TakeUntil(cancelStream) // 終了条件を監視
-                    .Subscribe(col =>                           // 解除条件を満たす前だけ呼ばれる
-                    {
-                        CharacterStatus characterResponseInput = col.GetComponent<CharacterStatus>();
-                        if (characterResponseInput != null)
-                        {
-                            isAttack = false; // 一度攻撃が当たったら以降の攻撃は無効化
-                            hitTarget.Value = col; // ヒットしたターゲットを設定
-                        }
-                    });
-        }
 
-        // 1回だけリアクションしたいとき
-        hitTarget
-            .Where(col => col != null)
-            .Take(1)
-            .Subscribe(col =>
-            {
-                Debug.Log($"HitTarget: {col.name}");
-                // ここでゲームロジックを反応させる（例：攻撃UIやエフェクト）
-            });
+    #region ガード処理
+    #endregion
+
+    #region ダメージリアクション処理
+    public void DamageReaction(float blowPower, float blowTime)
+    {
+        // 攻撃強制キャンセル
+        attackTokenSource?.Cancel();
+        attack01.CancelAll();
+        attack02.CancelAll();
+        attack03.CancelAll();
+        waterShot.CancelAll();
+        assault.CancelAll();
+
+        AttackComboReset();
+
+        NonInterruptActionAsync(DamageReactionAsync(blowPower, blowTime)).Forget();
     }
 
-#endregion
 
-public void DamageReaction()
+    public async UniTask DamageReactionAsync(float blowPower, float blowTime)
     {
-        NonInterruptibleAction(DamageReactionAsync()).Forget();
-    }
-
-    public async UniTask DamageReactionAsync()
-    {
-
-        animator.SetTrigger("DamageReact_01");
+        animator.SetTrigger(CharacterState.DamageReaction.ToString());
 
         float startTime = Time.time;
-        while (Time.time - startTime < 0.6f)
+        while (Time.time - startTime < blowTime + 0.1f)
         {
-            if(Time.time - startTime < 0.5f)
+            if (Time.time - startTime < blowTime)
             {
-                rigidbody.linearVelocity = ((Vector3.left * transform.localScale.x) * 2000) * Time.deltaTime;
+                rigidbody.linearVelocity = ((Vector3.left * transform.localScale.x) * blowPower) * Time.deltaTime;
             }
             await UniTask.Yield(token);
         }
+    }
 
-    }
-    private void Update()
-    {
-        AnimatorClipInfo[] clipInfos = animator.GetCurrentAnimatorClipInfo(0);
-        if (clipInfos.Length > 0)
-        {
-            string clipName = clipInfos[0].clip.name;
-            //Debug.Log($"Now playing clip : {clipName}");
-        }
-    }
+
+    #endregion
 }
 
-
+#region まとめデータ
 [System.Serializable]
 public class MoveData
 {
@@ -306,16 +312,19 @@ public class MoveData
         this.speed = speed;
     }
 }
+#endregion
 
+
+# region モーションデータ
 
 [System.Serializable]
 public class AttackData
 {
-    [SerializeField]
+    [SerializeField,Header("判定個別管理")]
     HitSpot[] attackColliders;
 
-    [SerializeField]
-    float nonInterruptTime = 1f;
+    [SerializeField,Header("入力拒否時間")]
+    float nonInterruptTime = 0f;
 
     public float NonInterruptTime => nonInterruptTime;
 
@@ -377,6 +386,10 @@ public class HitSpot
     float blowPower = 2000f;
     public float BlowPower => blowPower;
 
+    [SerializeField]
+    float blowTime = 0.5f; // 追加
+    public float BlowTime => blowTime; // 追加
+
     private IDisposable triggerSubscription;
 
     /// <summary>
@@ -409,3 +422,5 @@ public class HitSpot
         triggerSubscription?.Dispose();
     }
 }
+
+# endregion

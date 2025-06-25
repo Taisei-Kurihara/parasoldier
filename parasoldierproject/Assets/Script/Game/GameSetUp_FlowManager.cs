@@ -125,7 +125,7 @@ public class GameSetUp_FlowManager : MonoBehaviour
         // Identityステージの場合、敵のIdentityStageを取得
         if (StageName == SelectStage.Identity.ToString()) 
         {
-            StageName = nowEnemy.GetComponent<EnemyAI>().IdentityStage.ToString();
+            StageName = nowEnemy.GetComponent<EnemyAIBase>().IdentityStage.ToString();
             await UniTask.WaitUntil(() => StageName != SelectStage.Identity.ToString(), cancellationToken: token);
         }
 

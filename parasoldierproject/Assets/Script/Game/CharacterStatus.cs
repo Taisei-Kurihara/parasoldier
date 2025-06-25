@@ -19,10 +19,11 @@ public abstract class CharacterStatus : MonoBehaviour
     [HideInInspector]
     public ReactiveProperty<float> hp = new ReactiveProperty<float>(100);
 
-    public void DamageReaction(float damage)
+    public void DamageReaction(float damage, float blowPower, float blowTime)
     {
         hp.Value -= damage;
-        characterMove.DamageReaction();
+        characterMove.DamageReaction(blowPower, blowTime);
     }
+
 
 }
