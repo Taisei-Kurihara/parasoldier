@@ -1,16 +1,18 @@
+using System;
 using System.Collections;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UniRx;
 using UniRx.Triggers;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public enum CharacterState
 {
     Idle,
     Move,
-    Attack,
+    Attack_01,
+    Attack_02,
+    Attack_03,
     WaterShot,
     Charge,
     Assault,
@@ -30,6 +32,11 @@ public class CharacterMove : MonoBehaviour
     CancellationToken token;
     Rigidbody rigidbody;
 
+    [SerializeField] private AttackData attack01;
+    [SerializeField] private AttackData attack02;
+    [SerializeField] private AttackData attack03;
+    [SerializeField] private AttackData waterShot;
+    [SerializeField] private AttackData assault;
 
     #region 入力管理
 
@@ -127,7 +134,6 @@ public class CharacterMove : MonoBehaviour
 
             animator.SetBool("isWalk", (CanItBeMoved || Interrupt));
 
-
             await UniTask.Yield(token);
         }
 
@@ -211,9 +217,45 @@ public class CharacterMove : MonoBehaviour
         await UniTask.Delay(1000, cancellationToken: token); // 攻撃アニメーションの再生時間に合わせて待機
     }
 
-    #endregion
+    void Attackcolls(Collider[] attackColliders)
+    {
+        ReactiveProperty<Collider> hitTarget = new ReactiveProperty<Collider>(null);
+        float startTime = Time.time;
+        bool isAttack = true;
 
-    public void DamageReaction()
+        // 終了トリガーの監視（1秒経過 or 攻撃済み）
+        var cancelStream = Observable.EveryUpdate()
+            .Where(_ => Time.time - startTime >= 1f || !isAttack);
+
+        foreach (var c in attackColliders)
+        {
+            c.OnTriggerEnterAsObservable()
+            .TakeUntil(cancelStream) // 終了条件を監視
+                    .Subscribe(col =>                           // 解除条件を満たす前だけ呼ばれる
+                    {
+                        CharacterResponseInput characterResponseInput = col.GetComponent<CharacterResponseInput>();
+                        if (characterResponseInput != null)
+                        {
+                            isAttack = false; // 一度攻撃が当たったら以降の攻撃は無効化
+                            hitTarget.Value = col; // ヒットしたターゲットを設定
+                        }
+                    });
+        }
+
+        // 1回だけリアクションしたいとき
+        hitTarget
+            .Where(col => col != null)
+            .Take(1)
+            .Subscribe(col =>
+            {
+                Debug.Log($"HitTarget: {col.name}");
+                // ここでゲームロジックを反応させる（例：攻撃UIやエフェクト）
+            });
+    }
+
+#endregion
+
+public void DamageReaction()
     {
         NonInterruptibleAction(DamageReactionAsync()).Forget();
     }
@@ -224,11 +266,11 @@ public class CharacterMove : MonoBehaviour
         animator.SetTrigger("DamageReact_01");
 
         float startTime = Time.time;
-        while (Time.time - startTime < 2f)
+        while (Time.time - startTime < 0.6f)
         {
-            if(Time.time - startTime < 1f)
+            if(Time.time - startTime < 0.5f)
             {
-
+                rigidbody.linearVelocity = ((Vector3.left * transform.localScale.x) * 2000) * Time.deltaTime;
             }
             await UniTask.Yield(token);
         }
@@ -258,5 +300,103 @@ public class MoveData
     public MoveData(float speed)
     {
         this.speed = speed;
+    }
+}
+
+
+[System.Serializable]
+public class AttackData
+{
+    [SerializeField]
+    HitSpot[] attackColliders;
+
+    [SerializeField]
+    float nonInterruptTime = 1f;
+
+    public float NonInterruptTime => nonInterruptTime;
+
+    CharacterState MoveState { get; }
+
+    private CancellationTokenSource tokenSource = new();
+
+    public AttackData(CharacterState characterState)
+    {
+        this.MoveState = characterState;
+    }
+
+    /// <summary>
+    /// 全HitSpotを有効化（OnTrigger購読開始）
+    /// </summary>
+    public void ActivateAll(Action<Collider> onHitCallback)
+    {
+        foreach (var spot in attackColliders)
+        {
+            spot.TriggerSubscribe(tokenSource.Token, onHitCallback).Forget();
+        }
+    }
+
+    /// <summary>
+    /// 全HitSpotの処理をキャンセル
+    /// </summary>
+    public void CancelAll()
+    {
+        tokenSource.Cancel();
+        foreach (var spot in attackColliders)
+        {
+            spot.ForceCancel();
+        }
+        tokenSource = new CancellationTokenSource(); // 再利用できるよう新規生成
+    }
+}
+
+[System.Serializable]
+public class HitSpot
+{
+    [SerializeField]
+    Collider attackCollider;
+
+    [SerializeField]
+    float startDelayTime = 0.5f;
+
+    [SerializeField]
+    float endTime = 1f;
+
+    [SerializeField]
+    float damage = 10f;
+    public float Damage => damage;
+
+    [SerializeField]
+    float blowPower = 2000f;
+    public float BlowPower => blowPower;
+
+    private IDisposable triggerSubscription;
+
+    /// <summary>
+    /// トリガーイベントを購読し、一定時間後に解除
+    /// </summary>
+    public async UniTaskVoid TriggerSubscribe(CancellationToken token, Action<Collider> onHitCallback)
+    {
+        try
+        {
+            await UniTask.Delay(TimeSpan.FromSeconds(startDelayTime), cancellationToken: token);
+
+            triggerSubscription = attackCollider
+                .OnTriggerEnterAsObservable()
+                .TakeUntilDestroy(attackCollider)
+                .TakeUntil(UniTask.Delay(TimeSpan.FromSeconds(endTime), cancellationToken: token).ToObservable())
+                .Subscribe(onHitCallback);
+        }
+        catch (OperationCanceledException)
+        {
+            // キャンセル時は何もしない
+        }
+    }
+
+    /// <summary>
+    /// 外部からの強制キャンセル処理
+    /// </summary>
+    public void ForceCancel()
+    {
+        triggerSubscription?.Dispose();
     }
 }

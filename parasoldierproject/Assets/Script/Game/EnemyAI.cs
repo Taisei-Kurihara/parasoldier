@@ -32,7 +32,7 @@ public class EnemyAI : CharacterResponseInput
 
     async UniTask Approach()
     {
-        characterMove.moveData.moveDis.Value = 1;
+        characterMove.moveData.moveDis.Value = -1;
     }
 
 

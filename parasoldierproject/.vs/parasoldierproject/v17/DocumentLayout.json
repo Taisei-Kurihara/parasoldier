@@ -3,32 +3,36 @@
   "WorkspaceRootPath": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|c:\\users\\hukaw\\desktop\\df\\public\\sc\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\assets\\script\\game\\charactermove.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\assets\\script\\game\\charactermove.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\game\\charactermove.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|c:\\users\\hukaw\\desktop\\df\\public\\sc\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\assets\\script\\game\\creativedestructionmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\game\\creativedestructionmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\assets\\script\\game\\characterresponseinput.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\game\\characterresponseinput.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\assets\\script\\game\\maincanvas.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\game\\maincanvas.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\assets\\script\\game\\gamesetup_flowmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\game\\gamesetup_flowmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\assets\\script\\game\\gamemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\game\\gamemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\assets\\script\\game\\enemyai.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\game\\enemyai.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\assets\\script\\game\\hpmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\game\\hpmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\assets\\script\\game\\creativedestructionmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\game\\creativedestructionmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\assets\\script\\game\\gamesetup_flowmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\game\\gamesetup_flowmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\assets\\script\\game\\maincanvas.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\game\\maincanvas.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\assets\\script\\select\\selectbutton.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -53,10 +57,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\assets\\inputsystems\\inputsetlist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|solutionrelative:assets\\inputsystems\\inputsetlist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\assets\\script\\game\\enemyai.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\game\\enemyai.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\assets\\inputsystems\\systeminput.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -106,7 +106,7 @@
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 13,
               "Title": "InputSetList.cs",
               "DocumentMoniker": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\Assets\\InputSystems\\InputSetList.cs",
               "RelativeDocumentMoniker": "Assets\\InputSystems\\InputSetList.cs",
@@ -166,13 +166,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 5,
               "Title": "EnemyAI.cs",
               "DocumentMoniker": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\Assets\\Script\\Game\\EnemyAI.cs",
               "RelativeDocumentMoniker": "Assets\\Script\\Game\\EnemyAI.cs",
               "ToolTip": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\Assets\\Script\\Game\\EnemyAI.cs",
               "RelativeToolTip": "Assets\\Script\\Game\\EnemyAI.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAADwvxwAAAAWAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAADwvyIAAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-07T00:43:58.27Z"
             },
@@ -214,19 +214,19 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 3,
               "Title": "GameSetUp_FlowManager.cs",
               "DocumentMoniker": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\Assets\\Script\\Game\\GameSetUp_FlowManager.cs",
               "RelativeDocumentMoniker": "Assets\\Script\\Game\\GameSetUp_FlowManager.cs",
               "ToolTip": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\Assets\\Script\\Game\\GameSetUp_FlowManager.cs",
               "RelativeToolTip": "Assets\\Script\\Game\\GameSetUp_FlowManager.cs",
-              "ViewState": "AgIAAF8AAAAAAAAAAAAcwJcAAAApAAAAAAAAAA==",
+              "ViewState": "AgIAAE8AAAAAAAAAAAAUwF0AAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-11T01:06:08.28Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "SelectButton.cs",
               "DocumentMoniker": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\Assets\\Script\\Select\\SelectButton.cs",
               "RelativeDocumentMoniker": "Assets\\Script\\Select\\SelectButton.cs",
@@ -238,7 +238,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
               "Title": "PlayerInputMoveAction.cs",
               "DocumentMoniker": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\Assets\\Script\\Game\\PlayerInputMoveAction.cs",
               "RelativeDocumentMoniker": "Assets\\Script\\Game\\PlayerInputMoveAction.cs",
@@ -246,12 +246,11 @@
               "RelativeToolTip": "Assets\\Script\\Game\\PlayerInputMoveAction.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAA8AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T01:45:29.526Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T01:45:29.526Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "CharacterResponseInput.cs",
               "DocumentMoniker": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\Assets\\Script\\Game\\CharacterResponseInput.cs",
               "RelativeDocumentMoniker": "Assets\\Script\\Game\\CharacterResponseInput.cs",
@@ -259,8 +258,7 @@
               "RelativeToolTip": "Assets\\Script\\Game\\CharacterResponseInput.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T01:59:17.493Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T01:59:17.493Z"
             },
             {
               "$type": "Document",
@@ -282,38 +280,38 @@
               "RelativeDocumentMoniker": "Assets\\Script\\Game\\CharacterMove.cs",
               "ToolTip": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\Assets\\Script\\Game\\CharacterMove.cs",
               "RelativeToolTip": "Assets\\Script\\Game\\CharacterMove.cs",
-              "ViewState": "AgIAAKQAAAAAAAAAAAAQwMcAAAAjAAAAAAAAAA==",
+              "ViewState": "AgIAAKoAAAAAAAAAAAAYwN8AAAAdAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-06T10:33:33.338Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 6,
               "Title": "HPManager.cs",
               "DocumentMoniker": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\Assets\\Script\\Game\\HPManager.cs",
               "RelativeDocumentMoniker": "Assets\\Script\\Game\\HPManager.cs",
               "ToolTip": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\Assets\\Script\\Game\\HPManager.cs",
               "RelativeToolTip": "Assets\\Script\\Game\\HPManager.cs",
-              "ViewState": "AgIAAAoAAAAAAAAAAAAuwCcAAAASAAAAAAAAAA==",
+              "ViewState": "AgIAABEAAAAAAAAAAADwvyMAAAARAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-06T10:32:09.98Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "GameManager.cs",
               "DocumentMoniker": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\Assets\\Script\\Game\\GameManager.cs",
               "RelativeDocumentMoniker": "Assets\\Script\\Game\\GameManager.cs",
               "ToolTip": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\Assets\\Script\\Game\\GameManager.cs",
               "RelativeToolTip": "Assets\\Script\\Game\\GameManager.cs",
-              "ViewState": "AgIAABQAAAAAAAAAAAAmwC8AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAbAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-06T10:15:54.299Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 7,
               "Title": "MainCanvas.cs",
               "DocumentMoniker": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\Assets\\Script\\Game\\MainCanvas.cs",
               "RelativeDocumentMoniker": "Assets\\Script\\Game\\MainCanvas.cs",
@@ -325,15 +323,16 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 1,
               "Title": "CreativeDestructionManager.cs",
               "DocumentMoniker": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\Assets\\Script\\Game\\CreativeDestructionManager.cs",
               "RelativeDocumentMoniker": "Assets\\Script\\Game\\CreativeDestructionManager.cs",
               "ToolTip": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\Assets\\Script\\Game\\CreativeDestructionManager.cs",
               "RelativeToolTip": "Assets\\Script\\Game\\CreativeDestructionManager.cs",
-              "ViewState": "AgIAAAwAAAAAAAAAAAAgwBgAAAAOAAAAAAAAAA==",
+              "ViewState": "AgIAAIUAAAAAAAAAAAAYwJsAAAAyAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-06T08:44:35.991Z"
+              "WhenOpened": "2025-06-06T08:44:35.991Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -349,7 +348,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
               "Title": "SceneChangeButton.cs",
               "DocumentMoniker": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\Assets\\Script\\Scene\\SceneChangeButton.cs",
               "RelativeDocumentMoniker": "Assets\\Script\\Scene\\SceneChangeButton.cs",
@@ -361,7 +360,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "SceneLoader.cs",
               "DocumentMoniker": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\Assets\\Script\\Scene\\SceneLoader.cs",
               "RelativeDocumentMoniker": "Assets\\Script\\Scene\\SceneLoader.cs",
@@ -373,7 +372,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 12,
               "Title": "LoadingCheck.cs",
               "DocumentMoniker": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\Assets\\Script\\Scene\\LoadingCheck.cs",
               "RelativeDocumentMoniker": "Assets\\Script\\Scene\\LoadingCheck.cs",
