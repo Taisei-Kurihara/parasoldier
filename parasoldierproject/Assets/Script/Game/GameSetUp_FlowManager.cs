@@ -71,8 +71,8 @@ public class GameSetUp_FlowManager : MonoBehaviour
         nowPlayerCharacter = await LoadAndInstantiateAsync(PlayerCharacterName, new Vector3(-5, 1, 0), token);
 
         // HP UIの設定
-        nowPlayerCharacter.GetComponent<CharacterResponseInput>().hp.Value = GameManager.Instance.HpManager.p1Hp.Value;
-        nowPlayerCharacter.GetComponent<CharacterResponseInput>().hp.Subscribe(x => GameManager.Instance.HpManager.p1Hp.Value = x);
+        nowPlayerCharacter.GetComponent<CharacterStatus>().hp.Value = GameManager.Instance.HpManager.p1Hp.Value;
+        nowPlayerCharacter.GetComponent<CharacterStatus>().hp.Subscribe(x => GameManager.Instance.HpManager.p1Hp.Value = x);
 
         GameSetUp().Forget();
     }
@@ -84,7 +84,7 @@ public class GameSetUp_FlowManager : MonoBehaviour
         GameManager.Instance.HpManager.ResetHP(); // HPをリセット
 
         // プレイヤーキャラクターの位置とHPを設定
-        nowPlayerCharacter.GetComponent<CharacterResponseInput>().hp.Value = GameManager.Instance.HpManager.p1Hp.Value;
+        nowPlayerCharacter.GetComponent<CharacterStatus>().hp.Value = GameManager.Instance.HpManager.p1Hp.Value;
         nowPlayerCharacter.transform.position = new Vector3(-5, 1, 0);
 
         await Enemy_StageSetUp();
@@ -114,8 +114,8 @@ public class GameSetUp_FlowManager : MonoBehaviour
         nowEnemy.transform.localScale = scale;
 
         // HP UIの設定
-        nowEnemy.GetComponent<CharacterResponseInput>().hp.Value = GameManager.Instance.HpManager.p2Hp.Value;
-        nowEnemy.GetComponent<CharacterResponseInput>().hp.Subscribe(x => GameManager.Instance.HpManager.p2Hp.Value = x);
+        nowEnemy.GetComponent<CharacterStatus>().hp.Value = GameManager.Instance.HpManager.p2Hp.Value;
+        nowEnemy.GetComponent<CharacterStatus>().hp.Subscribe(x => GameManager.Instance.HpManager.p2Hp.Value = x);
 
 
 

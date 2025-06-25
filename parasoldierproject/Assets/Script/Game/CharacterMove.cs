@@ -192,30 +192,34 @@ public class CharacterMove : MonoBehaviour
 
     async UniTask Attackasync()
     {
-        // 攻撃処理
         Debug.Log("Attack Combo: " + NowCombo);
-        animator.SetTrigger("attack_01");
-        //animator.SetTrigger("attack_0" + NowCombo);
-        float startTime = Time.time;
-        bool isAttack = true;
 
-        var cancelStream = Observable.EveryUpdate()
-            .Where(_ => Time.time - startTime >= 1f || !isAttack); // 終了条件を明示
+        AttackData currentAttack = NowCombo switch
+        {
+            1 => attack01,
+            2 => attack02,
+            3 => attack03,
+            _ => attack01
+        };
 
-        attackColl.OnTriggerEnterAsObservable()
-            .TakeUntil(cancelStream) // 終了条件を監視
-                    .Subscribe(col =>                           // 解除条件を満たす前だけ呼ばれる
+        animator.SetTrigger(currentAttack.MoveState.ToString());
+
+        currentAttack.ActivateAll((col, spot) =>
+        {
+            CharacterStatus characterResponseInput = col.GetComponent<CharacterStatus>();
+            if (characterResponseInput != null)
             {
-                CharacterResponseInput characterResponseInput = col.GetComponent<CharacterResponseInput>();
-                if (characterResponseInput != null)
-                {
-                    isAttack = false; // 一度攻撃が当たったら以降の攻撃は無効化
-                    characterResponseInput.DamageReaction(10f); // ここでダメージを与える
-                }
-            });
+                float damage = spot.Damage;
+                float blowPower = spot.BlowPower;
+                characterResponseInput.DamageReaction(damage);
+            }
+        });
 
-        await UniTask.Delay(1000, cancellationToken: token); // 攻撃アニメーションの再生時間に合わせて待機
+        await UniTask.Delay((int)(currentAttack.NonInterruptTime * 1000), cancellationToken: token);
     }
+
+
+
 
     void Attackcolls(Collider[] attackColliders)
     {
@@ -233,7 +237,7 @@ public class CharacterMove : MonoBehaviour
             .TakeUntil(cancelStream) // 終了条件を監視
                     .Subscribe(col =>                           // 解除条件を満たす前だけ呼ばれる
                     {
-                        CharacterResponseInput characterResponseInput = col.GetComponent<CharacterResponseInput>();
+                        CharacterStatus characterResponseInput = col.GetComponent<CharacterStatus>();
                         if (characterResponseInput != null)
                         {
                             isAttack = false; // 一度攻撃が当たったら以降の攻撃は無効化
@@ -315,7 +319,7 @@ public class AttackData
 
     public float NonInterruptTime => nonInterruptTime;
 
-    CharacterState MoveState { get; }
+    public CharacterState MoveState { get; private set; }
 
     private CancellationTokenSource tokenSource = new();
 
@@ -327,13 +331,18 @@ public class AttackData
     /// <summary>
     /// 全HitSpotを有効化（OnTrigger購読開始）
     /// </summary>
-    public void ActivateAll(Action<Collider> onHitCallback)
+    public void ActivateAll(Action<Collider, HitSpot> onHitCallback)
     {
         foreach (var spot in attackColliders)
         {
-            spot.TriggerSubscribe(tokenSource.Token, onHitCallback).Forget();
+            spot.TriggerSubscribe(tokenSource.Token, (col) =>
+            {
+                onHitCallback(col, spot);
+                CancelAll(); // どれか当たった時点で全体キャンセル
+            }).Forget();
         }
     }
+
 
     /// <summary>
     /// 全HitSpotの処理をキャンセル
@@ -391,6 +400,7 @@ public class HitSpot
             // キャンセル時は何もしない
         }
     }
+
 
     /// <summary>
     /// 外部からの強制キャンセル処理

@@ -2,7 +2,8 @@ using Cysharp.Threading.Tasks;
 using UniRx;
 using UnityEngine;
 
-public abstract class CharacterResponseInput : MonoBehaviour
+
+public abstract class CharacterStatus : MonoBehaviour
 {
 
     protected CharacterMove characterMove;

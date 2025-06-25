@@ -3,16 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\assets\\script\\game\\charactermove.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|c:\\users\\hukaw\\desktop\\df\\public\\sc\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\assets\\script\\game\\characterstatus.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\game\\characterstatus.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|c:\\users\\hukaw\\desktop\\df\\public\\sc\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\assets\\script\\game\\charactermove.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\game\\charactermove.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|c:\\users\\hukaw\\desktop\\df\\public\\sc\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\assets\\script\\game\\creativedestructionmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\assets\\script\\game\\creativedestructionmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\game\\creativedestructionmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\assets\\script\\game\\characterresponseinput.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\game\\characterresponseinput.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{97781217-9E10-C2B0-BDAC-C787E886C17C}|Assembly-CSharp.csproj|C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\assets\\script\\game\\gamesetup_flowmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -102,7 +102,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 101,
-          "SelectedChildIndex": 14,
+          "SelectedChildIndex": 12,
           "Children": [
             {
               "$type": "Document",
@@ -174,7 +174,8 @@
               "RelativeToolTip": "Assets\\Script\\Game\\EnemyAI.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAADwvyIAAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T00:43:58.27Z"
+              "WhenOpened": "2025-06-07T00:43:58.27Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -222,7 +223,8 @@
               "RelativeToolTip": "Assets\\Script\\Game\\GameSetUp_FlowManager.cs",
               "ViewState": "AgIAAE8AAAAAAAAAAAAUwF0AAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-11T01:06:08.28Z"
+              "WhenOpened": "2025-06-11T01:06:08.28Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -246,19 +248,21 @@
               "RelativeToolTip": "Assets\\Script\\Game\\PlayerInputMoveAction.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAA8AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T01:45:29.526Z"
+              "WhenOpened": "2025-06-07T01:45:29.526Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "CharacterResponseInput.cs",
-              "DocumentMoniker": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\Assets\\Script\\Game\\CharacterResponseInput.cs",
-              "RelativeDocumentMoniker": "Assets\\Script\\Game\\CharacterResponseInput.cs",
-              "ToolTip": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\Assets\\Script\\Game\\CharacterResponseInput.cs",
-              "RelativeToolTip": "Assets\\Script\\Game\\CharacterResponseInput.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAeAAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "CharacterStatus.cs",
+              "DocumentMoniker": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\Assets\\Script\\Game\\CharacterStatus.cs",
+              "RelativeDocumentMoniker": "Assets\\Script\\Game\\CharacterStatus.cs",
+              "ToolTip": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\Assets\\Script\\Game\\CharacterStatus.cs",
+              "RelativeToolTip": "Assets\\Script\\Game\\CharacterStatus.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAlAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T01:59:17.493Z"
+              "WhenOpened": "2025-06-07T01:59:17.493Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -274,13 +278,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "CharacterMove.cs",
               "DocumentMoniker": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\Assets\\Script\\Game\\CharacterMove.cs",
               "RelativeDocumentMoniker": "Assets\\Script\\Game\\CharacterMove.cs",
               "ToolTip": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\Assets\\Script\\Game\\CharacterMove.cs",
               "RelativeToolTip": "Assets\\Script\\Game\\CharacterMove.cs",
-              "ViewState": "AgIAAKoAAAAAAAAAAAAYwN8AAAAdAAAAAAAAAA==",
+              "ViewState": "AgIAALYAAAAAAAAAAAAIwNUAAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-06T10:33:33.338Z",
               "EditorCaption": ""
@@ -323,7 +327,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "CreativeDestructionManager.cs",
               "DocumentMoniker": "C:\\Users\\hukaw\\Desktop\\DF\\public\\SC\\\u5408\u540C\u5236\u4F5C\\parasoldier\\parasoldierproject\\Assets\\Script\\Game\\CreativeDestructionManager.cs",
               "RelativeDocumentMoniker": "Assets\\Script\\Game\\CreativeDestructionManager.cs",
@@ -331,8 +335,7 @@
               "RelativeToolTip": "Assets\\Script\\Game\\CreativeDestructionManager.cs",
               "ViewState": "AgIAAIUAAAAAAAAAAAAYwJsAAAAyAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-06T08:44:35.991Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-06T08:44:35.991Z"
             },
             {
               "$type": "Document",

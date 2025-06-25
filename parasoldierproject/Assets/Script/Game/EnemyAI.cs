@@ -7,7 +7,7 @@ public enum enemyAILv
     Approach, // ‹ßŠñ‚é
 }
 
-public class EnemyAI : CharacterResponseInput
+public class EnemyAI : CharacterStatus
 {
     [SerializeField]
     SelectStage identityStage = SelectStage.TestStage;

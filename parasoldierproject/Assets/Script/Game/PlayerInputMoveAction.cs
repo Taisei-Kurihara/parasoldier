@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerInputMoveAction : CharacterResponseInput
+public class PlayerInputMoveAction : CharacterStatus
 {
     SystemInput systemInput;
 
