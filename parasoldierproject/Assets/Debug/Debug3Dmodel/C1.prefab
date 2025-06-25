@@ -195,7 +195,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 3717704612990027564}
-  attackColl: {fileID: 3093099095787831392}
+  attack01:
+    attackColliders:
+    - attackCollider: {fileID: 3093099095787831392}
+      startDelayTime: 0
+      endTime: 1000
+      damage: 10
+      blowPower: 2000
+    nonInterruptTime: 1
+  attack02:
+    attackColliders: []
+    nonInterruptTime: 0
+  attack03:
+    attackColliders: []
+    nonInterruptTime: 0
+  waterShot:
+    attackColliders: []
+    nonInterruptTime: 0
+  assault:
+    attackColliders: []
+    nonInterruptTime: 0
   moveData:
     speed: 1000
 --- !u!114 &3737574871181484173

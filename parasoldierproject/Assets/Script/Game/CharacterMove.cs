@@ -26,17 +26,14 @@ public class CharacterMove : MonoBehaviour
     [SerializeField]
     Animator animator;
 
-    [SerializeField]
-    Collider attackColl;
-
     CancellationToken token;
     Rigidbody rigidbody;
 
-    [SerializeField] private AttackData attack01;
-    [SerializeField] private AttackData attack02;
-    [SerializeField] private AttackData attack03;
-    [SerializeField] private AttackData waterShot;
-    [SerializeField] private AttackData assault;
+    [SerializeField] private AttackData attack01 = new AttackData(CharacterState.Attack_01);
+    [SerializeField] private AttackData attack02 = new AttackData(CharacterState.Attack_02);
+    [SerializeField] private AttackData attack03 = new AttackData(CharacterState.Attack_03);
+    [SerializeField] private AttackData waterShot = new AttackData(CharacterState.WaterShot);
+    [SerializeField] private AttackData assault = new AttackData(CharacterState.Assault);
 
     #region 入力管理
 
@@ -206,9 +203,12 @@ public class CharacterMove : MonoBehaviour
 
         currentAttack.ActivateAll((col, spot) =>
         {
+            Debug.Log("hit:" + col.name);
             CharacterStatus characterResponseInput = col.GetComponent<CharacterStatus>();
             if (characterResponseInput != null)
             {
+                currentAttack.CancelAll();
+                Debug.Log("characterResponseInput != null");
                 float damage = spot.Damage;
                 float blowPower = spot.BlowPower;
                 characterResponseInput.DamageReaction(damage);
@@ -338,7 +338,6 @@ public class AttackData
             spot.TriggerSubscribe(tokenSource.Token, (col) =>
             {
                 onHitCallback(col, spot);
-                CancelAll(); // どれか当たった時点で全体キャンセル
             }).Forget();
         }
     }
