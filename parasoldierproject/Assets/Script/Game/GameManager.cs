@@ -2,6 +2,7 @@ using UnityEngine;
 using UniRx;
 using Cysharp.Threading.Tasks;
 using UnityEngine.SceneManagement;
+using System.Threading;
 
 /// <summary> ゲームの進行 </summary>
 public class GameManager : MonoBehaviour
@@ -68,20 +69,29 @@ public class GameManager : MonoBehaviour
 
     }
 
-    GameObject nowresul { get { return nowresul; } set { Destroy(nowresul); nowresul = value; } }
+    GameObject nowresult = null;
+
+    GameObject Nowresul {
+        get { return nowresult; }
+        set {
+            if (Nowresul != null) { Destroy(nowresult); }
+
+            nowresult = value;
+
+            Nowresul.SetActive(false); // 生成したオブジェクトを有効化
+
+            Nowresul.transform.parent = CreativeDestructionManager.Instance.MainCanvasData.transform;
+            Nowresul.transform.localPosition = Vector3.zero; // Canvasの中心に配置
+        }
+    }
 
     private async UniTask ShowResultFlow(string result)
     {
         var token = this.GetCancellationTokenOnDestroy();
-        
-        nowresul = await GameSetUp_FlowManager.Instance.AddreLoadAndInstantiateAsync(result, Vector3.zero ,token);
 
-        nowresul.SetActive(false); // 生成したオブジェクトを有効化
+        Nowresul = await GameSetUp_FlowManager.Instance.AddreLoadAndInstantiateAsync(result, Vector3.zero ,token).AttachExternalCancellation(token);
 
-        nowresul.transform.parent = CreativeDestructionManager.Instance.MainCanvasData.transform;
-        nowresul.transform.localPosition = Vector3.zero; // Canvasの中心に配置
-
-        nowresul.SetActive(true); // リザルト画面を表示
+        Nowresul.SetActive(true); // リザルト画面を表示
     }
 
     public void OnRetryButton()
@@ -94,17 +104,17 @@ public class GameManager : MonoBehaviour
     {
         var token = this.GetCancellationTokenOnDestroy();
 
+        Destroy(Nowresul); // 既存のリザルト画面を破棄
+
         // 戦闘継続できるかチェック
         if (GameSetUp_FlowManager.Instance.IsLastEnemy)
         {
             // 最終結果画面表示
-            var finalResult = await GameSetUp_FlowManager.Instance.AddreLoadAndInstantiateAsync("FinalResult", Vector3.zero, this.GetCancellationTokenOnDestroy());
-            finalResult.transform.SetParent(CreativeDestructionManager.Instance.MainCanvasData.transform);
-            finalResult.transform.localPosition = Vector3.zero;
+            Nowresul = await GameSetUp_FlowManager.Instance.AddreLoadAndInstantiateAsync("FinalResult", Vector3.zero, this.GetCancellationTokenOnDestroy());
+            Nowresul.SetActive(true); // 最終結果画面を表示
         }
         else
         {
-
             GameSetUp_FlowManager.Instance.retry();
         }
         // SetUp呼び出し

@@ -220,7 +220,7 @@ public class GameSetUp_FlowManager : MonoBehaviour
     {
         List<GameObject> instances = new List<GameObject>();
 
-        GameObject prefab = await AddreLoadAsync(address, cancellationToken);
+        GameObject prefab = await AddreLoadAsync(address, cancellationToken).AttachExternalCancellation(cancellationToken);
         if (prefab == null) return instances;
 
         for (int i = 0; i < count; i++)
@@ -235,14 +235,14 @@ public class GameSetUp_FlowManager : MonoBehaviour
 
     public async UniTask<GameObject> AddreLoadAndInstantiateAsync(string address, Vector3 insPos, CancellationToken cancellationToken = default)
     {
-        // 親子付けして生成
-        GameObject instance = await AddreLoadAndInstantiateAsync(address, insPos, null, cancellationToken);
+        GameObject instance = await AddreLoadAndInstantiateAsync(address, insPos, (Transform)null, cancellationToken).AttachExternalCancellation(cancellationToken);
         return instance;
     }
 
-    public async UniTask<GameObject> AddreLoadAndInstantiateAsync(string address, Vector3 insPos, Transform parent = null, CancellationToken cancellationToken = default)
+
+    public async UniTask<GameObject> AddreLoadAndInstantiateAsync(string address, Vector3 insPos, Transform parent, CancellationToken cancellationToken = default)
     {
-        GameObject prefab = await AddreLoadAsync(address, cancellationToken);
+        GameObject prefab = await AddreLoadAsync(address, cancellationToken).AttachExternalCancellation(cancellationToken);
 
         if (prefab == null) return null;
 
