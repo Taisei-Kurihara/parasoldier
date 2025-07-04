@@ -18,8 +18,15 @@ public enum CharacterState
     Charge,
     Assault,
     Guard,
-    DamageReaction
+    DamageReaction,
+    GuardTransition
+
 }
+
+public enum PowerLevel { Lv0 = 0, Lv1 = 1, Lv2 = 2, Lv3 = 3, Lv4 = 4 } // 攻撃の強さ
+public enum BlowResistLevel { Lv0 = 0, Lv1 = 1, Lv2 = 2, Lv3 = 3, Lv4 = 4 } // 吹き飛び耐性
+public enum DamageReduceLevel { Lv0, Lv1, Lv2, Lv3, Lv4 } // ダメージ軽減率
+public enum GuardState { None, Transition, Guarding } // 防御状態
 #endregion
 
 /// <summary> キャラクタの動きだけを管理する </summary>
@@ -32,28 +39,38 @@ public class CharacterMove : MonoBehaviour
     Rigidbody rigidbody;
 
     #region モーションデータ
-    [SerializeField] private AttackData attack01 = new AttackData(CharacterState.Attack_01);
-    [SerializeField] private AttackData attack02 = new AttackData(CharacterState.Attack_02);
-    [SerializeField] private AttackData attack03 = new AttackData(CharacterState.Attack_03);
-    [SerializeField] private AttackData waterShot = new AttackData(CharacterState.WaterShot);
-    [SerializeField] private AttackData assault = new AttackData(CharacterState.Assault);
+    [SerializeField] private AttackData Attack01 = new AttackData(CharacterState.Attack_01);
+    [SerializeField] private AttackData Attack02 = new AttackData(CharacterState.Attack_02);
+    [SerializeField] private AttackData Attack03 = new AttackData(CharacterState.Attack_03);
+    [SerializeField] private AttackData WaterShot = new AttackData(CharacterState.WaterShot);
+    [SerializeField] private AttackData Assault = new AttackData(CharacterState.Assault);
     #endregion
 
 
     #region 入力管理
 
     #region 全体入力管理
-    CharacterState NowState = CharacterState.Idle;
+    private CharacterState nowState = CharacterState.Idle;
+    private CharacterState NowState
+    {
+        get => nowState;
+        set
+        {
+            nowState = value;
+            GetComponent<CharacterStatus>().currentState.Value = value;
+        }
+    }
+
 
     BitArray generalOrder = new BitArray(2, true);
 
     /// <summary> 戦闘前or決着後に動けなくする用 </summary>
     public bool inputFailure { get { return generalOrder[0]; } }
-    private void UnlockInput() { generalOrder[0] = false; }
-    private void DisableInput() { generalOrder[0] = true; }
+    public void UnlockInput() { generalOrder[0] = false; }
+    public void DisableInput() { generalOrder[0] = true; }
 
     // / <summary> 入力割り込みできるか </summary>
-    public bool Interrupt { get { return (inputFailure) ? inputFailure:generalOrder[1]; } set { generalOrder[1] = value; } }
+    public bool Interrupt { get { return (inputFailure) ? !inputFailure:generalOrder[1]; } set { generalOrder[1] = value; } }
     
     CancellationTokenSource attackTokenSource = new(); // 攻撃中断用
 
@@ -108,7 +125,7 @@ public class CharacterMove : MonoBehaviour
     public void Init()
     {
         #region debug用初期化処理
-        UnlockInput();
+        //UnlockInput();
         #endregion
 
         AttackComboReset();
@@ -176,11 +193,13 @@ public class CharacterMove : MonoBehaviour
         attackTokenSource = new CancellationTokenSource();
         CancellationToken attackToken = attackTokenSource.Token;
 
+        NowState = attack.MoveState;
+
         animator.SetTrigger(attack.MoveState.ToString());
 
         attack.ActivateAll((col, spot) =>
         {
-            Debug.Log("hit:" + col.name);
+            //Debug.Log("hit:" + col.name);
             CharacterStatus characterResponseInput = col.GetComponent<CharacterStatus>();
             if (characterResponseInput != null)
             {
@@ -199,17 +218,20 @@ public class CharacterMove : MonoBehaviour
 
     public void AttackInput()
     {
-        NonInterruptCheck(AttackCombo());
+        if (Interrupt)
+        {
+            AttackCombo().Forget();
+        }
     }
 
     async UniTask AttackCombo()
     {
         AttackData currentAttack = NowCombo switch
         {
-            1 => attack01,
-            2 => attack02,
-            3 => attack03,
-            _ => attack01
+            1 => Attack01,
+            2 => Attack02,
+            3 => Attack03,
+            _ => Attack01
         };
 
         await NonInterruptActionAsync(PlayAttackMotion(currentAttack));
@@ -231,7 +253,7 @@ public class CharacterMove : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("time:" + (Time.time - startTime).ToString("F2"));
+                    //Debug.Log("time:" + (Time.time - startTime).ToString("F2"));
                 }
             })
             .AddTo(this);
@@ -245,7 +267,7 @@ public class CharacterMove : MonoBehaviour
     #region 水撃処理
     public void WaterShotInput()
     {
-        NonInterruptCheck(PlayAttackMotion(waterShot));
+        NonInterruptCheck(PlayAttackMotion(WaterShot));
         
     }
     #endregion
@@ -253,29 +275,119 @@ public class CharacterMove : MonoBehaviour
     #region 突進処理
     public void AssaultInput()
     {
-        NonInterruptCheck(PlayAttackMotion(assault));
+        NonInterruptCheck(PlayAttackMotion(Assault));
     }
     #endregion
 
 
     #region ガード処理
+    CancellationTokenSource guardTokenSource;
+    bool isGuarding = false;
+
+    public void GuardInput()
+    {
+        NonInterruptCheck(GuardAsync());
+    }
+
+    public void GuardOutInput()
+    {
+        if (isGuarding)
+        {
+            guardTokenSource?.Cancel(); // 終了処理
+            EndGuard();
+        }
+    }
+
+    async UniTask GuardAsync()
+    {
+        guardTokenSource?.Cancel();
+        guardTokenSource = new CancellationTokenSource();
+        var guardToken = guardTokenSource.Token;
+
+        NowState = CharacterState.GuardTransition;
+        animator.SetTrigger(CharacterState.GuardTransition.ToString());
+
+        await UniTask.Delay(300, cancellationToken: guardToken); // 展開中
+
+        NowState = CharacterState.Guard;
+        isGuarding = true;
+        animator.SetBool("isGuard", true);
+    }
+
+    void EndGuard()
+    {
+        isGuarding = false;
+        NowState = CharacterState.Idle;
+        animator.SetBool("isGuard", false);
+    }
+
     #endregion
+
+    #region チャージ処理
+
+    CancellationTokenSource chargeTokenSource;
+    bool isCharging = false;
+
+    public void ChargeInput()
+    {
+        NonInterruptCheck(ChargeAsync());
+    }
+
+    public void ChargeOutInput()
+    {
+        if (isCharging)
+        {
+            chargeTokenSource?.Cancel();
+            EndCharge();
+        }
+    }
+
+    async UniTask ChargeAsync()
+    {
+        chargeTokenSource?.Cancel();
+        chargeTokenSource = new CancellationTokenSource();
+        var chargeToken = chargeTokenSource.Token;
+
+        NowState = CharacterState.Charge;
+        isCharging = true;
+        animator.SetBool("isCharge", true);
+        await UniTask.Delay(2000, cancellationToken: chargeToken);
+        Debug.Log("MaxCharge!");
+    }
+
+    void EndCharge()
+    {
+        isCharging = false;
+        NowState = CharacterState.Idle;
+        animator.SetBool("isCharge", false);
+    }
+
+    #endregion
+
+
 
     #region ダメージリアクション処理
     public void DamageReaction(float blowPower, float blowTime)
     {
-        // 攻撃強制キャンセル
+        // 攻撃やその他アクション強制キャンセ
         attackTokenSource?.Cancel();
-        attack01.CancelAll();
-        attack02.CancelAll();
-        attack03.CancelAll();
-        waterShot.CancelAll();
-        assault.CancelAll();
+        guardTokenSource?.Cancel();
+        chargeTokenSource?.Cancel();
+        EndGuard();
+        EndCharge();
+
+        // HitSpotやAttackDataキャンセル
+        Attack01.CancelAll();
+        Attack02.CancelAll();
+        Attack03.CancelAll();
+        WaterShot.CancelAll();
+        Assault.CancelAll();
 
         AttackComboReset();
 
         NonInterruptActionAsync(DamageReactionAsync(blowPower, blowTime)).Forget();
     }
+
 
 
     public async UniTask DamageReactionAsync(float blowPower, float blowTime)

@@ -127,7 +127,22 @@ public class SceneLoader : MonoBehaviour
         SceneManager.UnloadSceneAsync(loadSceneName);
     }
 
+    public void ShowOnlyLoadUI()
+    {
+        StartCoroutine(ShowLoadUIOnlyRoutine());
+    }
 
+    private IEnumerator ShowLoadUIOnlyRoutine()
+    {
+        yield return null;
+        LoadFlagsReset();
+        // ÉçÅ[ÉhUIÇæÇØèoÇ∑
+        yield return SceneManager.LoadSceneAsync(LoadSceneName.Load.ToString(), LoadSceneMode.Additive);
+        percent = 1;
+        loadFlags[1] = true;
 
+        while (!loadFlags.Get(3)) yield return null;
+        SceneManager.UnloadSceneAsync(LoadSceneName.Load.ToString());
+    }
 
 }

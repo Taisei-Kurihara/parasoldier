@@ -66,14 +66,15 @@
     <Compile Include="Assets\Script\Select\BackButton.cs" />
     <Compile Include="Assets\InputSystems\InputSetList.cs" />
     <Compile Include="Assets\Script\Scene\SceneChangeButton.cs" />
+    <Compile Include="Assets\Script\Scene\NextBattleButton.cs" />
     <Compile Include="Assets\Script\Game\GameManager.cs" />
     <Compile Include="Assets\Script\Game\HPManager.cs" />
     <Compile Include="Assets\Script\Select\SelectButton.cs" />
     <Compile Include="Assets\Script\Select\StartButton.cs" />
     <Compile Include="Assets\Script\Select\StartBackButton.cs" />
     <Compile Include="Assets\Script\Game\CharacterStatus.cs" />
-    <Compile Include="Assets\InputSystems\SystemInput.cs" />
     <Compile Include="Assets\Script\Game\EnemyAIBase.cs" />
+    <Compile Include="Assets\InputSystems\SystemInput.cs" />
     <Compile Include="Assets\Script\Game\CreativeDestructionManager.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
     <Compile Include="Assets\Script\Scene\LoadingCheck.cs" />

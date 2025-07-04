@@ -1,11 +1,8 @@
 using Cysharp.Threading.Tasks;
 using UniRx;
 using UnityEngine;
-
-
 public abstract class CharacterStatus : MonoBehaviour
 {
-
     protected CharacterMove characterMove;
 
     private void Awake()
@@ -19,11 +16,27 @@ public abstract class CharacterStatus : MonoBehaviour
     [HideInInspector]
     public ReactiveProperty<float> hp = new ReactiveProperty<float>(100);
 
+    [HideInInspector]
+    public ReactiveProperty<float> gage = new ReactiveProperty<float>(0);
+
+    [HideInInspector]
+    public ReactiveProperty<CharacterState> currentState = new(CharacterState.Idle);
+
+
+    /// <summary> このキャラクターがP1かP2かを示す </summary>
+    [HideInInspector]
+    public PType OwnerType { get; set; }
+
     public void DamageReaction(float damage, float blowPower, float blowTime)
     {
         hp.Value -= damage;
         characterMove.DamageReaction(blowPower, blowTime);
     }
 
+    public void AddGage(float amount)
+    {
+        gage.Value = Mathf.Clamp(gage.Value + amount, 0, 100f); // 例：最大値100として制限
+    }
 
 }
+

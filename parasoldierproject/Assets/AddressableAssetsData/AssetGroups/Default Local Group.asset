@@ -15,8 +15,18 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: edb9bf7b0ac35534fa7cb0a2e85ed9cb
   m_SerializeEntries:
+  - m_GUID: 3c22d34e4dfb3174f8c19b9234a17368
+    m_Address: FinalResult
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5504beabc88a6304bb8190841b5586f1
     m_Address: RojouStage
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 69469367b33b94940b220587d573f56c
+    m_Address: ResultImage
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -25,18 +35,23 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b4d7f63497319974d88a4aecd4d4fc0a
-    m_Address: EnemyTestCharacter
+  - m_GUID: 87dc1761c3f9ac948916641cdf5d48fe
+    m_Address: PlayerTestCharacter
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b660b399a4a4e2b43ad7796e891ea740
-    m_Address: PlayerTestCharacter
+  - m_GUID: b4efc339d0a7a024ca20dfab75e22e3b
+    m_Address: EnemyTestCharacter
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: be571b4fc0330be4c8633530a159430b
     m_Address: TestStage
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c35e606b3ba02984cbeaa41fbb82bc27
+    m_Address: ReadyFight
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

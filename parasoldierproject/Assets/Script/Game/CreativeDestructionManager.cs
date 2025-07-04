@@ -56,37 +56,9 @@ public class CreativeDestructionManager : MonoBehaviour
             return;
         }
         instance = this;
-        //DontDestroyOnLoad(gameObject);
+        DontDestroyOnLoad(gameObject);
 
-#if UNITY_EDITOR
-        //DebugSceneCheck();
-#endif
     }
-    #endregion
-
-    #region
-    private void DebugSceneCheck()
-    {
-        SceneName sceneName;
-        if (SceneManager.GetActiveScene().name == "Title")
-        {
-            sceneName = SceneName.Title;
-        }
-        else if (SceneManager.GetActiveScene().name == "Select")
-        {
-            sceneName = SceneName.Select;
-        }
-        else if (SceneManager.GetActiveScene().name == "Game")
-        {
-            sceneName = SceneName.Game;
-        }
-        else
-        {
-            sceneName = SceneName.Result;
-        }
-        WhatToDoNow(sceneName.ToString());
-    }
-
     #endregion
 
     #region
@@ -97,7 +69,6 @@ public class CreativeDestructionManager : MonoBehaviour
 
         SceneLoader loader = SceneLoader.Instance;
 
-        mainCanvas = null;
 
         Debug.Log($"WhatToDoNow called with sceneName: {sceneName}");
 
@@ -222,8 +193,6 @@ public class CreativeDestructionManager : MonoBehaviour
         // ゲームシーンがロードされたら、アクティブにする
         SceneManager.SetActiveScene(gameScene);
 
-        SceneLoader loader = SceneLoader.Instance;
-
         int count = Enum.GetValues(typeof(ImplementedEnemyCharacter)).Length;
 
         GameSetUp_FlowManager.Instance.FightSetUp(new CreativeCharacterAndStageDatas(
@@ -232,7 +201,7 @@ public class CreativeDestructionManager : MonoBehaviour
             (ImplementedPlayerCharacter)Enum.ToObject(typeof(ImplementedPlayerCharacter), playerCharacterIndex)
         ));
  
-        //loader.Loadended();
+
     }
 }
 
