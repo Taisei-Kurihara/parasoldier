@@ -90,7 +90,7 @@ public class GameSetUp_FlowManager : MonoBehaviour
     async UniTask GameSetUp()
     {
 
-        await Enemy_StageSetUp();
+        await Enemy_StageSetUp().AttachExternalCancellation(token);
 
         GameManager.Instance.HpManager.ResetHP();
 
@@ -104,13 +104,54 @@ public class GameSetUp_FlowManager : MonoBehaviour
         nowPlayerCharacter.transform.position = new Vector3(-5, 1, 0);
 
         // ReadyFight演出
-        await ShowReadyFight(); // ← ReadyFight画像のロード＆表示（後述）
-
+        await ShowReadyFight().AttachExternalCancellation(token);
 
         playerMove.UnlockInput();
         enemyMove.UnlockInput();
 
         SceneLoader.Instance.Loadended(); // ロードUI解除
+    }
+
+    private void Update()
+    {
+        if (nowPlayerCharacter != null)
+        {
+            string debugInfo = "";
+
+            // 位置
+            debugInfo += $"p_pos: {nowPlayerCharacter.transform.position}\n";
+
+            // Scale
+            debugInfo += $"scale: {nowPlayerCharacter.transform.lossyScale}\n";
+
+            // アクティブ状態
+            debugInfo += $"active: {nowPlayerCharacter.activeInHierarchy}\n";
+
+            // MeshRendererまたはSkinnedMeshRendererを取得
+            Renderer renderer = nowPlayerCharacter.GetComponentInChildren<Renderer>();
+            if (renderer != null)
+            {
+                Material mat = renderer.sharedMaterial;
+                if (mat != null)
+                {
+                    debugInfo += $"material: {mat.name}\n";
+                    debugInfo += $"shader: {mat.shader?.name ?? "null"}\n";
+                    debugInfo += $"albedoTex: {(mat.HasProperty("_MainTex") ? mat.mainTexture?.name ?? "null" : "no _MainTex")}\n";
+                    debugInfo += $"renderQueue: {mat.renderQueue}\n";
+                }
+                else
+                {
+                    debugInfo += "material: null\n";
+                }
+            }
+            else
+            {
+                debugInfo += "renderer: null\n";
+            }
+
+            // 表示
+            texttest.Instance.text = debugInfo;
+        }
     }
 
     GameObject readyFightInstance = null;
@@ -119,7 +160,7 @@ public class GameSetUp_FlowManager : MonoBehaviour
     {
         if (readyFightInstance == null)
         {
-            var handle = await AddreLoadAndInstantiateAsync("ReadyFight", Vector3.down, token);
+            var handle = await AddreLoadAndInstantiateAsync("ReadyFight", Vector3.zero, token);
             readyFightInstance = handle;
 
             readyFightInstance.transform.parent = CreativeDestructionManager.Instance.MainCanvasData.transform;
@@ -257,16 +298,16 @@ public class GameSetUp_FlowManager : MonoBehaviour
         AsyncOperationHandle<GameObject> handle = Addressables.LoadAssetAsync<GameObject>(address);
         await UniTask.WaitUntil(() => handle.Result !=null ,PlayerLoopTiming.EarlyUpdate,cancellationToken);
 
-        // キャンセルされた場合はここで例外が投げられる
-        if (cancellationToken.IsCancellationRequested)
-        {
-            Addressables.Release(handle); // メモリリーク防止のため必ず Release
-            return null;
-        }
+        //// キャンセルされた場合はここで例外が投げられる
+        //if (cancellationToken.IsCancellationRequested)
+        //{
+        //    Addressables.Release(handle); // メモリリーク防止のため必ず Release
+        //    return null;
+        //}
 
         GameObject instance = handle.Result;
 
-        Addressables.Release(handle); // Prefab の参照だけなので解放してもOK
+        //Addressables.Release(handle); // Prefab の参照だけなので解放してもOK
         return instance;
     }
 

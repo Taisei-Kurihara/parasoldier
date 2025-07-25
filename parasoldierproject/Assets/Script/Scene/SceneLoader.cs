@@ -44,6 +44,9 @@ public class SceneLoader : MonoBehaviour
         }
     }
 
+    string nowLoadingSceneName = string.Empty;
+
+
     void Awake()
     {
         // シングルトン化
@@ -54,6 +57,7 @@ public class SceneLoader : MonoBehaviour
         }
         instance = this;
         DontDestroyOnLoad(gameObject); // シーンをまたいでも保持
+        nowLoadingSceneName = SceneManager.GetActiveScene().name;
     }
 
     /// <summary>
@@ -107,7 +111,8 @@ public class SceneLoader : MonoBehaviour
         yield return new WaitUntil(() => loadFlags[0]);
 
         // 3. 現在のシーン削除
-        yield return SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene());
+        yield return SceneManager.UnloadSceneAsync(nowLoadingSceneName);
+        nowLoadingSceneName = nextSceneName; // 次のシーン名を更新
         loadFlags.Set(1, true);
 
         // 4. 次のシーン読み込み、時間停止

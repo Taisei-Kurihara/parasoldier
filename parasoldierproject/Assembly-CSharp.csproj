@@ -71,8 +71,10 @@
     <Compile Include="Assets\Script\Game\HPManager.cs" />
     <Compile Include="Assets\Script\Select\SelectButton.cs" />
     <Compile Include="Assets\Script\Select\StartButton.cs" />
+    <Compile Include="Assets\Debug\texttest.cs" />
     <Compile Include="Assets\Script\Select\StartBackButton.cs" />
     <Compile Include="Assets\Script\Game\CharacterStatus.cs" />
+    <Compile Include="Assets\Debug\te.cs" />
     <Compile Include="Assets\Script\Game\EnemyAIBase.cs" />
     <Compile Include="Assets\InputSystems\SystemInput.cs" />
     <Compile Include="Assets\Script\Game\CreativeDestructionManager.cs" />

@@ -94,6 +94,11 @@ public class EnemyAIBase : CharacterStatus
                 await UniTask.Delay(500);
                 characterMove.moveData.moveDis.Value = -1f;
             }
+            else
+            {
+                // ƒvƒŒƒCƒ„[‚ªUŒ‚‚µ‚Ä‚¢‚È‚¢ê‡‚Í‹ß‚Ã‚­
+                characterMove.moveData.moveDis.Value = (distance > 2f) ? -1f : 0f;
+            }
 
             // UŒ‚”ÍˆÍ‚É“ü‚Á‚Ä‚¢‚½‚çUŒ‚
             if (distance <= 2f)

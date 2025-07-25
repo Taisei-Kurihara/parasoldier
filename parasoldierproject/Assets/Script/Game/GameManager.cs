@@ -91,6 +91,11 @@ public class GameManager : MonoBehaviour
 
         Nowresul = await GameSetUp_FlowManager.Instance.AddreLoadAndInstantiateAsync(result, Vector3.zero ,token).AttachExternalCancellation(token);
 
+        GameObject winorlose = await GameSetUp_FlowManager.Instance.AddreLoadAndInstantiateAsync((hpManager.orHPzero.Value == 2)?"win":"lose",Vector3.zero, token).AttachExternalCancellation(token);
+        
+        winorlose.transform.parent = Nowresul.transform;
+        winorlose.transform.localPosition = Vector3.zero; // リザルト画面の中心に配置
+
         Nowresul.SetActive(true); // リザルト画面を表示
     }
 

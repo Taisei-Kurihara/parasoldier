@@ -70,7 +70,7 @@ public class CharacterMove : MonoBehaviour
     public void DisableInput() { generalOrder[0] = true; }
 
     // / <summary> 入力割り込みできるか </summary>
-    public bool Interrupt { get { return (inputFailure) ? !inputFailure:generalOrder[1]; } set { generalOrder[1] = value; } }
+    public bool Interrupt { get { return ((inputFailure) ? !inputFailure:generalOrder[1]); } set { generalOrder[1] = value; } }
     
     CancellationTokenSource attackTokenSource = new(); // 攻撃中断用
 
@@ -177,6 +177,10 @@ public class CharacterMove : MonoBehaviour
         {
             NonInterruptActionAsync(innerTask).Forget();
         }
+        else
+        {
+            return;
+        }
     }
 
     async UniTask NonInterruptActionAsync(UniTask innerTask)
@@ -267,7 +271,10 @@ public class CharacterMove : MonoBehaviour
     #region 水撃処理
     public void WaterShotInput()
     {
-        NonInterruptCheck(PlayAttackMotion(WaterShot));
+        if (Interrupt)
+        {
+            NonInterruptActionAsync(PlayAttackMotion(WaterShot)).Forget();
+        }
         
     }
     #endregion
@@ -275,7 +282,10 @@ public class CharacterMove : MonoBehaviour
     #region 突進処理
     public void AssaultInput()
     {
-        NonInterruptCheck(PlayAttackMotion(Assault));
+        if (Interrupt)
+        {
+            NonInterruptActionAsync(PlayAttackMotion(Assault)).Forget();
+        }
     }
     #endregion
 
@@ -286,7 +296,10 @@ public class CharacterMove : MonoBehaviour
 
     public void GuardInput()
     {
-        NonInterruptCheck(GuardAsync());
+        if (Interrupt)
+        {
+            NonInterruptActionAsync(GuardAsync()).Forget();
+        }
     }
 
     public void GuardOutInput()
@@ -330,7 +343,10 @@ public class CharacterMove : MonoBehaviour
 
     public void ChargeInput()
     {
-        NonInterruptCheck(ChargeAsync());
+        if (Interrupt)
+        {
+            NonInterruptActionAsync(ChargeAsync()).Forget();
+        }
     }
 
     public void ChargeOutInput()
@@ -351,9 +367,23 @@ public class CharacterMove : MonoBehaviour
         NowState = CharacterState.Charge;
         isCharging = true;
         animator.SetBool("isCharge", true);
-        await UniTask.Delay(2000, cancellationToken: chargeToken);
-        Debug.Log("MaxCharge!");
+
+        try
+        {
+            await UniTask.Delay(1000, cancellationToken: chargeToken);
+
+            // チャージ完了時にゲージ加算（例: 30加算）
+            GetComponent<CharacterStatus>().AddGage(100f/5);
+            Debug.Log("MaxCharge! Gage Added.");
+        }
+        catch (OperationCanceledException)
+        {
+            Debug.Log("Charge Canceled");
+        }
+
+        EndCharge();
     }
+
 
     void EndCharge()
     {
