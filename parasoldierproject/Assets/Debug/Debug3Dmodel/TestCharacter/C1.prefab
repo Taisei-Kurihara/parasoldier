@@ -899,8 +899,14 @@ MonoBehaviour:
     attackColliders: []
     nonInterruptTime: 0
   Assault:
-    attackColliders: []
-    nonInterruptTime: 0
+    attackColliders:
+    - attackCollider: {fileID: 4286194881357124056}
+      startDelayTime: 0
+      endTime: 1
+      damage: 10
+      blowPower: 5000
+      blowTime: 0.6
+    nonInterruptTime: 1
   moveData:
     speed: 1000
 --- !u!114 &7403483162130899301

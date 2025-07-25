@@ -247,11 +247,11 @@ public class CharacterMove : MonoBehaviour
         float startTime = Time.time;
 
         Observable.EveryUpdate()
-            .Where(_ => num != NowCombo || Time.time - startTime >= 2)
+            .Where(_ => num != NowCombo || Time.time - startTime >= 1)
             .Take(1)
             .Subscribe(_ =>
             {
-                if(Time.time - startTime >= 2)
+                if(Time.time - startTime >= 1)
                 {
                     AttackComboReset();
                 }
@@ -271,6 +271,7 @@ public class CharacterMove : MonoBehaviour
     #region êÖåÇèàóù
     public void WaterShotInput()
     {
+        if(GetComponent<CharacterStatus>().gage.Value >= ((100/5) * 2))
         if (Interrupt)
         {
             NonInterruptActionAsync(PlayAttackMotion(WaterShot)).Forget();
@@ -284,7 +285,9 @@ public class CharacterMove : MonoBehaviour
     {
         if (Interrupt)
         {
+            DamageReactionAsync(-1000,0.6f).Forget();
             NonInterruptActionAsync(PlayAttackMotion(Assault)).Forget();
+
         }
     }
     #endregion
@@ -415,6 +418,8 @@ public class CharacterMove : MonoBehaviour
 
         AttackComboReset();
 
+        animator.SetTrigger(CharacterState.DamageReaction.ToString());
+
         NonInterruptActionAsync(DamageReactionAsync(blowPower, blowTime)).Forget();
     }
 
@@ -422,8 +427,6 @@ public class CharacterMove : MonoBehaviour
 
     public async UniTask DamageReactionAsync(float blowPower, float blowTime)
     {
-        animator.SetTrigger(CharacterState.DamageReaction.ToString());
-
         float startTime = Time.time;
         while (Time.time - startTime < blowTime + 0.1f)
         {
