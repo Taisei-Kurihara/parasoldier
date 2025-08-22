@@ -7,7 +7,6 @@ public class PlayerInputMoveAction : CharacterStatus
 
     protected override void AwakeInit()
     {
-
         systemInput = GetComponent<SystemInput>();
 
         systemInput.Init();
@@ -16,6 +15,7 @@ public class PlayerInputMoveAction : CharacterStatus
         systemInput.MethodSetting(PlayerInputNames.Assault, ActionSettype.plus, OnAssault);
         systemInput.MethodSetting(PlayerInputNames.WaterShot, ActionSettype.plus, OnWaterShot);
         systemInput.MethodSetting(PlayerInputNames.Charge, ActionSettype.plus, OnCharge);
+        systemInput.MethodSetting(PlayerInputNames.Guard, ActionSettype.plus, OnGuard, OutGuard);
     }
 
     public void OnMove(InputAction.CallbackContext context)
@@ -42,8 +42,19 @@ public class PlayerInputMoveAction : CharacterStatus
     {
         characterMove.AssaultInput();
     }
+
     public void OnCharge(InputAction.CallbackContext context)
     {
         characterMove.ChargeInput();
+    }
+
+    public void OnGuard(InputAction.CallbackContext context)
+    {
+        characterMove.GuardInput();
+    }
+
+    public void OutGuard(InputAction.CallbackContext context)
+    {
+        characterMove.GuardOutInput();
     }
 }

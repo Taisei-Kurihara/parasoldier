@@ -47,7 +47,10 @@ public enum GuardState { None, Transition, Guarding }
 public class CharacterMove : MonoBehaviour
 {
     [SerializeField]
-    Animator animator; // アニメーション制御用
+    Animator character; // アニメーション制御用
+
+    [SerializeField]
+    Animator parasol; // アニメーション制御用
 
     CancellationToken token; // 破棄検知用のキャンセルトークン
     Rigidbody rigidbody;     // キャラ移動用の物理ボディ
@@ -163,7 +166,7 @@ public class CharacterMove : MonoBehaviour
                 rigidbody.linearVelocity = ((Vector3.right * moveData.moveDis.Value) * moveData.Speed) * Time.deltaTime;
             }
 
-            animator.SetBool("isWalk", (CanItBeMoved || Interrupt));
+            character.SetBool("isWalk", (CanItBeMoved || Interrupt));
             await UniTask.Yield(token);
         }
 
@@ -172,7 +175,7 @@ public class CharacterMove : MonoBehaviour
         {
             NowState = CharacterState.Idle;
         }
-        animator.SetBool("isWalk", false);
+        character.SetBool("isWalk", false);
         SetNowMoveInput = false;
     }
     #endregion
@@ -207,7 +210,7 @@ public class CharacterMove : MonoBehaviour
         CancellationToken attackToken = attackTokenSource.Token;
 
         NowState = attack.MoveState;
-        animator.SetTrigger(attack.MoveState.ToString());
+        character.SetTrigger(attack.MoveState.ToString());
 
         // 攻撃判定有効化
         attack.ActivateAll((col, spot) =>
@@ -328,20 +331,26 @@ public class CharacterMove : MonoBehaviour
         var guardToken = guardTokenSource.Token;
 
         NowState = CharacterState.GuardTransition;
-        animator.SetTrigger(CharacterState.GuardTransition.ToString());
+        character.SetTrigger(CharacterState.GuardTransition.ToString());
 
         await UniTask.Delay(300, cancellationToken: guardToken); // 展開中
 
         NowState = CharacterState.Guard;
         isGuarding = true;
-        animator.SetBool("isGuard", true);
+        character.SetBool("isGuard", true);
+
+        // ガード中は無敵化
+        SetInvincible(true);
     }
 
     void EndGuard()
     {
         isGuarding = false;
         NowState = CharacterState.Idle;
-        animator.SetBool("isGuard", false);
+        character.SetBool("isGuard", false);
+
+        // ガード解除時に無敵解除
+        SetInvincible(false);
     }
     #endregion
 
@@ -375,7 +384,7 @@ public class CharacterMove : MonoBehaviour
 
         NowState = CharacterState.Charge;
         isCharging = true;
-        animator.SetBool("isCharge", true);
+        character.SetBool("isCharge", true);
 
         try
         {
@@ -395,14 +404,52 @@ public class CharacterMove : MonoBehaviour
     {
         isCharging = false;
         NowState = CharacterState.Idle;
-        animator.SetBool("isCharge", false);
+        character.SetBool("isCharge", false);
     }
     #endregion
 
 
     #region ダメージリアクション処理
+    // ==============================
+    // 無敵状態管理
+    // ==============================
+    [SerializeField] private bool isInvincible = false;
+    [SerializeField] private float invincibleTime = 1.0f; // デフォルトの無敵時間
+
+    public bool IsInvincible => isInvincible;
+
+    /// <summary>
+    /// 無敵状態を任意に切り替える
+    /// </summary>
+    public void SetInvincible(bool value)
+    {
+        isInvincible = value;
+        Debug.Log($"Invincible: {value}");
+    }
+
+    /// <summary>
+    /// 一定時間だけ無敵化する
+    /// </summary>
+    public async UniTask InvincibleForSeconds(float seconds, CancellationToken token)
+    {
+        SetInvincible(true);
+        try
+        {
+            await UniTask.Delay(TimeSpan.FromSeconds(seconds), cancellationToken: token);
+        }
+        catch (OperationCanceledException) { }
+        SetInvincible(false);
+    }
+
+
+    // ==============================
+    // ダメージリアクション処理
+    // ==============================
     public void DamageReaction(float blowPower, float blowTime)
     {
+        // 無敵中なら無視
+        if (IsInvincible) return;
+
         // 各アクションを強制キャンセル
         attackTokenSource?.Cancel();
         guardTokenSource?.Cancel();
@@ -418,8 +465,13 @@ public class CharacterMove : MonoBehaviour
         Assault.CancelAll();
         AttackComboReset();
 
-        animator.SetTrigger(CharacterState.DamageReaction.ToString());
+        character.SetTrigger(CharacterState.DamageReaction.ToString());
+
+        // ダメージリアクション開始
         NonInterruptActionAsync(DamageReactionAsync(blowPower, blowTime)).Forget();
+
+        // 無敵化処理（吹き飛び時間＋α）
+        InvincibleForSeconds(blowTime + invincibleTime, token).Forget();
     }
 
     public async UniTask DamageReactionAsync(float blowPower, float blowTime)

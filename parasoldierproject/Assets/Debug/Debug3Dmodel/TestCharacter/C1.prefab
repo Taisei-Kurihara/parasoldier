@@ -861,7 +861,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc676acf65a4c224ba69a3affcc8de86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 2338286505377223343}
+  character: {fileID: 2338286505377223343}
+  parasol: {fileID: 0}
   Attack01:
     attackColliders:
     - attackCollider: {fileID: 2301610739696488987}
@@ -909,6 +910,8 @@ MonoBehaviour:
     nonInterruptTime: 1
   moveData:
     speed: 1000
+  isInvincible: 0
+  invincibleTime: 1
 --- !u!114 &7403483162130899301
 MonoBehaviour:
   m_ObjectHideFlags: 0
