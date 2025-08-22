@@ -1,44 +1,59 @@
-using System;
-using System.Collections;
-using System.Threading;
-using Cysharp.Threading.Tasks;
-using UniRx;
-using UniRx.Triggers;
-using UnityEngine;
+// ==========================================
+// using: 利用しているライブラリ
+// ==========================================
 
-# region enum
+using System;                    // C# の基本クラス (Action, IDisposable, etc.)
+using System.Collections;        // コレクション用 (BitArray 等)
+using System.Threading;          // CancellationToken/CancellationTokenSource 用
+using Cysharp.Threading.Tasks;   // UniTask (非同期処理を Task より軽量に扱える)
+using UniRx;                     // UniRx (Reactive Extensions for Unity) - ReactiveProperty など
+using UniRx.Triggers;            // UniRx のトリガー拡張 (OnTriggerEnterAsObservable 等)
+using UnityEngine;               // Unity の基本クラス (MonoBehaviour, Animator, Rigidbody 等)
+
+// ==========================================
+// enum: キャラクターの状態やレベル定義
+// ==========================================
+#region enum
 public enum CharacterState
 {
-    Idle,
-    Move,
-    Attack_01,
-    Attack_02,
-    Attack_03,
-    WaterShot,
-    Charge,
-    Assault,
-    Guard,
-    DamageReaction,
-    GuardTransition
-
+    Idle,              // 待機
+    Move,              // 移動
+    Attack_01,         // 攻撃1
+    Attack_02,         // 攻撃2
+    Attack_03,         // 攻撃3
+    WaterShot,         // 水撃
+    Charge,            // チャージ
+    Assault,           // 突進
+    Guard,             // 防御中
+    DamageReaction,    // ダメージリアクション
+    GuardTransition    // ガード移行中
 }
 
-public enum PowerLevel { Lv0 = 0, Lv1 = 1, Lv2 = 2, Lv3 = 3, Lv4 = 4 } // 攻撃の強さ
-public enum BlowResistLevel { Lv0 = 0, Lv1 = 1, Lv2 = 2, Lv3 = 3, Lv4 = 4 } // 吹き飛び耐性
-public enum DamageReduceLevel { Lv0, Lv1, Lv2, Lv3, Lv4 } // ダメージ軽減率
-public enum GuardState { None, Transition, Guarding } // 防御状態
+// 攻撃の強さレベル
+public enum PowerLevel { Lv0 = 0, Lv1, Lv2, Lv3, Lv4 }
+// 吹き飛び耐性レベル
+public enum BlowResistLevel { Lv0 = 0, Lv1, Lv2, Lv3, Lv4 }
+// ダメージ軽減率レベル
+public enum DamageReduceLevel { Lv0, Lv1, Lv2, Lv3, Lv4 }
+// 防御状態
+public enum GuardState { None, Transition, Guarding }
 #endregion
 
-/// <summary> キャラクタの動きだけを管理する </summary>
+
+/// <summary>
+/// キャラクタの「移動・攻撃・防御・チャージ・ダメージリアクション」
+/// など、モーションや行動制御を管理するコンポーネント
+/// </summary>
 public class CharacterMove : MonoBehaviour
 {
     [SerializeField]
-    Animator animator;
+    Animator animator; // アニメーション制御用
 
-    CancellationToken token;
-    Rigidbody rigidbody;
+    CancellationToken token; // 破棄検知用のキャンセルトークン
+    Rigidbody rigidbody;     // キャラ移動用の物理ボディ
 
-    #region モーションデータ
+
+    #region モーションデータ（攻撃パターン定義）
     [SerializeField] private AttackData Attack01 = new AttackData(CharacterState.Attack_01);
     [SerializeField] private AttackData Attack02 = new AttackData(CharacterState.Attack_02);
     [SerializeField] private AttackData Attack03 = new AttackData(CharacterState.Attack_03);
@@ -48,8 +63,9 @@ public class CharacterMove : MonoBehaviour
 
 
     #region 入力管理
-
-    #region 全体入力管理
+    // ------------------------------------------
+    // 共通の入力状態管理
+    // ------------------------------------------
     private CharacterState nowState = CharacterState.Idle;
     private CharacterState NowState
     {
@@ -57,62 +73,58 @@ public class CharacterMove : MonoBehaviour
         set
         {
             nowState = value;
+            // CharacterStatus に現在の状態を反映
             GetComponent<CharacterStatus>().currentState.Value = value;
         }
     }
 
-
+    // 入力制御フラグ（2bit分利用）
     BitArray generalOrder = new BitArray(2, true);
 
-    /// <summary> 戦闘前or決着後に動けなくする用 </summary>
+    // [0] : 入力不可 (戦闘前/終了後のロック)
     public bool inputFailure { get { return generalOrder[0]; } }
     public void UnlockInput() { generalOrder[0] = false; }
     public void DisableInput() { generalOrder[0] = true; }
 
-    // / <summary> 入力割り込みできるか </summary>
-    public bool Interrupt { get { return ((inputFailure) ? !inputFailure:generalOrder[1]); } set { generalOrder[1] = value; } }
-    
-    CancellationTokenSource attackTokenSource = new(); // 攻撃中断用
+    // [1] : 入力割り込み可否（モーション中に次行動が可能か）
+    public bool Interrupt { get { return ((inputFailure) ? !inputFailure : generalOrder[1]); } set { generalOrder[1] = value; } }
 
+    // 攻撃キャンセル用トークンソース
+    CancellationTokenSource attackTokenSource = new();
     #endregion
 
-    #region 移動入力管理
 
+    #region 移動入力管理
     BitArray moveInput = new BitArray(2, false);
 
-    /// <summary> 現在移動入力中かどうか </summary>
+    // [0] : 現在移動入力中か
     public bool NowMoveInput { get { return moveInput[0]; } }
     private bool SetNowMoveInput { set { moveInput[0] = value; } }
 
-
-    /// <summary> 移動可能な状態か確認する </summary>
+    // [1] : 移動可能状態か
     public bool CanItBeMoved { get { return moveInput[1]; } }
     private void UnMove() { moveInput[1] = false; }
     private void OnMove() { moveInput[1] = true; }
     #endregion
 
+
     #region 攻撃入力管理
-
-    const int maxCombo = 3;
-
-    int nowComboIndex = 0; // 現在のコンボインデックス
+    const int maxCombo = 3;    // 最大コンボ数
+    int nowComboIndex = 0;     // 現在のコンボインデックス
 
     void AttackComboReset() { nowComboIndex = 0; }
-
     private int NowCombo { get { return (nowComboIndex + 1); } }
 
     void NextCombo()
     {
         nowComboIndex = (nowComboIndex + 1) % maxCombo;
     }
-
-    #endregion
-
     #endregion
 
     #region 開始処理
     private void Awake()
     {
+        // オブジェクト破棄時にキャンセルされるトークン
         token = this.GetCancellationTokenOnDestroy();
         rigidbody = GetComponent<Rigidbody>();
 
@@ -121,26 +133,24 @@ public class CharacterMove : MonoBehaviour
         Init();
     }
 
-
     public void Init()
     {
-        #region debug用初期化処理
-        //UnlockInput();
-        #endregion
-
+        // コンボリセット
         AttackComboReset();
+
+        // 移動入力監視 (ReactiveProperty moveDis)
         moveData.moveDis
-            .Subscribe(_ => { if (!NowMoveInput) { MoveAsync().Forget(); } } )
+            .Subscribe(_ => { if (!NowMoveInput) { MoveAsync().Forget(); } })
             .AddTo(this);
     }
-
     #endregion
 
-    #region 移動処理
 
+    #region 移動処理
     [SerializeField]
     public MoveData moveData = new MoveData(100);
 
+    /// <summary> 移動処理ループ </summary>
     async UniTask MoveAsync()
     {
         SetNowMoveInput = true;
@@ -154,32 +164,29 @@ public class CharacterMove : MonoBehaviour
             }
 
             animator.SetBool("isWalk", (CanItBeMoved || Interrupt));
-
             await UniTask.Yield(token);
         }
 
+        // 移動終了処理
         if (CanItBeMoved || Interrupt)
         {
             NowState = CharacterState.Idle;
         }
-
         animator.SetBool("isWalk", false);
-
-        SetNowMoveInput = false; // 移動が完了したら移動中フラグを下ろす
+        SetNowMoveInput = false;
     }
     #endregion
 
 
     #region 共通メソッド
+    /// <summary>
+    /// 割り込み不可処理ラッパ
+    /// </summary>
     void NonInterruptCheck(UniTask innerTask)
     {
         if (Interrupt)
         {
             NonInterruptActionAsync(innerTask).Forget();
-        }
-        else
-        {
-            return;
         }
     }
 
@@ -190,36 +197,36 @@ public class CharacterMove : MonoBehaviour
         Interrupt = true;
     }
 
-
+    /// <summary>
+    /// 攻撃モーション再生処理
+    /// </summary>
     async UniTask PlayAttackMotion(AttackData attack)
     {
-        attackTokenSource?.Cancel(); // 前回攻撃中断
+        attackTokenSource?.Cancel(); // 前回攻撃キャンセル
         attackTokenSource = new CancellationTokenSource();
         CancellationToken attackToken = attackTokenSource.Token;
 
         NowState = attack.MoveState;
-
         animator.SetTrigger(attack.MoveState.ToString());
 
+        // 攻撃判定有効化
         attack.ActivateAll((col, spot) =>
         {
-            //Debug.Log("hit:" + col.name);
-            CharacterStatus characterResponseInput = col.GetComponent<CharacterStatus>();
-            if (characterResponseInput != null)
+            CharacterStatus target = col.GetComponent<CharacterStatus>();
+            if (target != null)
             {
-                characterResponseInput.DamageReaction(spot.Damage, spot.BlowPower, spot.BlowTime);
-                attack.CancelAll();
+                target.DamageReaction(spot.Damage, spot.BlowPower, spot.BlowTime);
+                attack.CancelAll(); // 一度当たったら判定終了
             }
         });
 
+        // 割り込み禁止時間
         await UniTask.Delay((int)(attack.NonInterruptTime * 1000), cancellationToken: attackToken);
-
     }
     #endregion
 
 
     #region 攻撃処理
-
     public void AttackInput()
     {
         if (Interrupt)
@@ -230,6 +237,7 @@ public class CharacterMove : MonoBehaviour
 
     async UniTask AttackCombo()
     {
+        // 現在のコンボ番号に応じて攻撃データ切り替え
         AttackData currentAttack = NowCombo switch
         {
             1 => Attack01,
@@ -238,11 +246,11 @@ public class CharacterMove : MonoBehaviour
             _ => Attack01
         };
 
+        // 攻撃実行（割り込み不可）
         await NonInterruptActionAsync(PlayAttackMotion(currentAttack));
-
         NextCombo();
 
-        #region コンボタイマー
+        // コンボ継続受付タイマー
         int num = NowCombo;
         float startTime = Time.time;
 
@@ -251,43 +259,42 @@ public class CharacterMove : MonoBehaviour
             .Take(1)
             .Subscribe(_ =>
             {
-                if(Time.time - startTime >= 1)
+                if (Time.time - startTime >= 1.5f)
                 {
                     AttackComboReset();
                 }
-                else
-                {
-                    //Debug.Log("time:" + (Time.time - startTime).ToString("F2"));
-                }
             })
             .AddTo(this);
-        #endregion
     }
-
-
-
     #endregion
+
 
     #region 水撃処理
     public void WaterShotInput()
     {
-        if(GetComponent<CharacterStatus>().gage.Value >= ((100/5) * 2))
-        if (Interrupt)
+        if (GetComponent<CharacterStatus>().CheckGage() >= 1)
         {
-            NonInterruptActionAsync(PlayAttackMotion(WaterShot)).Forget();
+            GetComponent<CharacterStatus>().AddGage(-1);
+            if (Interrupt)
+            {
+                NonInterruptActionAsync(PlayAttackMotion(WaterShot)).Forget();
+            }
         }
-        
     }
     #endregion
+
 
     #region 突進処理
     public void AssaultInput()
     {
-        if (Interrupt)
+        if (GetComponent<CharacterStatus>().CheckGage() >= 2)
         {
-            DamageReactionAsync(-1000,0.6f).Forget();
-            NonInterruptActionAsync(PlayAttackMotion(Assault)).Forget();
-
+            GetComponent<CharacterStatus>().AddGage(-2);
+            if (Interrupt)
+            {
+                DamageReactionAsync(-1000, 0.6f).Forget();
+                NonInterruptActionAsync(PlayAttackMotion(Assault)).Forget();
+            }
         }
     }
     #endregion
@@ -309,7 +316,7 @@ public class CharacterMove : MonoBehaviour
     {
         if (isGuarding)
         {
-            guardTokenSource?.Cancel(); // 終了処理
+            guardTokenSource?.Cancel();
             EndGuard();
         }
     }
@@ -336,11 +343,10 @@ public class CharacterMove : MonoBehaviour
         NowState = CharacterState.Idle;
         animator.SetBool("isGuard", false);
     }
-
     #endregion
 
-    #region チャージ処理
 
+    #region チャージ処理
     CancellationTokenSource chargeTokenSource;
     bool isCharging = false;
 
@@ -374,9 +380,7 @@ public class CharacterMove : MonoBehaviour
         try
         {
             await UniTask.Delay(1000, cancellationToken: chargeToken);
-
-            // チャージ完了時にゲージ加算（例: 30加算）
-            GetComponent<CharacterStatus>().AddGage(100f/5);
+            GetComponent<CharacterStatus>().AddGage(1); // ゲージ加算
             Debug.Log("MaxCharge! Gage Added.");
         }
         catch (OperationCanceledException)
@@ -387,43 +391,36 @@ public class CharacterMove : MonoBehaviour
         EndCharge();
     }
 
-
     void EndCharge()
     {
         isCharging = false;
         NowState = CharacterState.Idle;
         animator.SetBool("isCharge", false);
     }
-
     #endregion
-
 
 
     #region ダメージリアクション処理
     public void DamageReaction(float blowPower, float blowTime)
     {
-        // 攻撃やその他アクション強制キャンセ
+        // 各アクションを強制キャンセル
         attackTokenSource?.Cancel();
         guardTokenSource?.Cancel();
         chargeTokenSource?.Cancel();
         EndGuard();
         EndCharge();
 
-        // HitSpotやAttackDataキャンセル
+        // 攻撃判定キャンセル
         Attack01.CancelAll();
         Attack02.CancelAll();
         Attack03.CancelAll();
         WaterShot.CancelAll();
         Assault.CancelAll();
-
         AttackComboReset();
 
         animator.SetTrigger(CharacterState.DamageReaction.ToString());
-
         NonInterruptActionAsync(DamageReactionAsync(blowPower, blowTime)).Forget();
     }
-
-
 
     public async UniTask DamageReactionAsync(float blowPower, float blowTime)
     {
@@ -437,11 +434,13 @@ public class CharacterMove : MonoBehaviour
             await UniTask.Yield(token);
         }
     }
-
-
     #endregion
 }
 
+
+// ==========================================
+// 補助クラス
+// ==========================================
 #region まとめデータ
 [System.Serializable]
 public class MoveData
@@ -450,6 +449,7 @@ public class MoveData
     float speed = 5f;
     public float Speed { get { return speed; } }
 
+    // ReactiveProperty: 値変更を監視できる float
     public ReactiveProperty<float> moveDis { get; private set; } = new(0);
 
     public MoveData(float speed)
@@ -460,21 +460,18 @@ public class MoveData
 #endregion
 
 
-# region モーションデータ
-
+#region モーションデータ
 [System.Serializable]
 public class AttackData
 {
-    [SerializeField,Header("判定個別管理")]
+    [SerializeField, Header("判定個別管理")]
     HitSpot[] attackColliders;
 
-    [SerializeField,Header("入力拒否時間")]
+    [SerializeField, Header("入力拒否時間")]
     float nonInterruptTime = 0f;
 
     public float NonInterruptTime => nonInterruptTime;
-
     public CharacterState MoveState { get; private set; }
-
     private CancellationTokenSource tokenSource = new();
 
     public AttackData(CharacterState characterState)
@@ -482,9 +479,7 @@ public class AttackData
         this.MoveState = characterState;
     }
 
-    /// <summary>
-    /// 全HitSpotを有効化（OnTrigger購読開始）
-    /// </summary>
+    /// <summary> 全HitSpotを有効化 </summary>
     public void ActivateAll(Action<Collider, HitSpot> onHitCallback)
     {
         foreach (var spot in attackColliders)
@@ -496,10 +491,7 @@ public class AttackData
         }
     }
 
-
-    /// <summary>
-    /// 全HitSpotの処理をキャンセル
-    /// </summary>
+    /// <summary> 全HitSpotをキャンセル </summary>
     public void CancelAll()
     {
         tokenSource.Cancel();
@@ -507,7 +499,7 @@ public class AttackData
         {
             spot.ForceCancel();
         }
-        tokenSource = new CancellationTokenSource(); // 再利用できるよう新規生成
+        tokenSource = new CancellationTokenSource();
     }
 }
 
@@ -517,28 +509,21 @@ public class HitSpot
     [SerializeField]
     Collider attackCollider;
 
-    [SerializeField]
-    float startDelayTime = 0.5f;
-
-    [SerializeField]
-    float endTime = 1f;
-
-    [SerializeField]
-    float damage = 10f;
+    [SerializeField] float startDelayTime = 0.5f; // 発生までの時間
+    [SerializeField] float endTime = 1f;   // 判定持続時間
+    [SerializeField] float damage = 10f;  // ダメージ
     public float Damage => damage;
 
-    [SerializeField]
-    float blowPower = 2000f;
+    [SerializeField] float blowPower = 2000f; // 吹き飛び力
     public float BlowPower => blowPower;
 
-    [SerializeField]
-    float blowTime = 0.5f; // 追加
-    public float BlowTime => blowTime; // 追加
+    [SerializeField] float blowTime = 0.5f; // 吹き飛び時間
+    public float BlowTime => blowTime;
 
     private IDisposable triggerSubscription;
 
     /// <summary>
-    /// トリガーイベントを購読し、一定時間後に解除
+    /// 攻撃判定を一定時間購読し、ヒット時にコールバック実行
     /// </summary>
     public async UniTaskVoid TriggerSubscribe(CancellationToken token, Action<Collider> onHitCallback)
     {
@@ -558,14 +543,10 @@ public class HitSpot
         }
     }
 
-
-    /// <summary>
-    /// 外部からの強制キャンセル処理
-    /// </summary>
+    /// <summary> 強制的に判定を終了 </summary>
     public void ForceCancel()
     {
         triggerSubscription?.Dispose();
     }
 }
-
-# endregion
+#endregion

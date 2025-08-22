@@ -15,6 +15,9 @@ public abstract class CharacterStatus : MonoBehaviour
 
     [HideInInspector]
     public ReactiveProperty<float> hp = new ReactiveProperty<float>(100);
+    
+
+    const float OneGage = 100f / 5f;
 
     [HideInInspector]
     public ReactiveProperty<float> gage = new ReactiveProperty<float>(0);
@@ -33,10 +36,16 @@ public abstract class CharacterStatus : MonoBehaviour
         characterMove.DamageReaction(blowPower, blowTime);
     }
 
-    public void AddGage(float amount)
+
+
+    public void AddGage(int amount)
     {
-        gage.Value = Mathf.Clamp(gage.Value + amount, 0, 100f); // 例：最大値100として制限
+        gage.Value = Mathf.Clamp(gage.Value + (amount * OneGage), 0, 100f); // 例：最大値100として制限
     }
 
+    public int CheckGage()
+    {
+        return (int)(gage.Value / OneGage); // 例：5段階に分ける
+    }
 }
 

@@ -84,7 +84,7 @@ public class EnemyAIBase : CharacterStatus
             // プレイヤーが攻撃を始めたら少し遅れて距離をとる
             if (playerState.Value.ToString().StartsWith("Attack"))
             {
-                float wait = UnityEngine.Random.Range(0.1f, 0.3f);
+                float wait = UnityEngine.Random.Range(0.25f, 0.5f);
                 await UniTask.Delay((int)(wait * 1000));
 
                 // 離れる
