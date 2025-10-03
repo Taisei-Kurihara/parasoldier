@@ -1,4 +1,5 @@
 using Common;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -27,6 +28,7 @@ public abstract class CharacterPresenter : MonoBehaviour
 
     public void DefaulInputlInitialize(StatusView_abstract view, CharacterType inputModel)
     {
+
         InputModel_interface defo = null;
         switch (inputModel)
         {
@@ -47,6 +49,12 @@ public abstract class CharacterPresenter : MonoBehaviour
     {
         View = view;
         SkillModel = skillModel;
+
+        weapon.SetBool("open", false);
+
+        SkillModel.SetCharacter = character;
+        SkillModel.SetWeapon = weapon;
+
         InputModel = inputModel;
 
         InputModel?.SetUpInput();

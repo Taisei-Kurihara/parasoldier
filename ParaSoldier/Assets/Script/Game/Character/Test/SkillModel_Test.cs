@@ -8,8 +8,6 @@ using UnityEngine;
 // キャラクターのスキル（移動、攻撃、ガードなど）の実装
 public class SkillModel_Test : SkillModel_abstract
 {
-    // アニメーションを制御するAnimatorコンポーネント
-    [SerializeField] Animator character;
     
     // 物理演算用のRigidbodyコンポーネント
     [SerializeField] Rigidbody rb;
@@ -40,15 +38,6 @@ public class SkillModel_Test : SkillModel_abstract
             if (rb == null)
             {
                 Debug.LogError("Rigidbody component not found on " + gameObject.name);
-            }
-        }
-        
-        if (character == null)
-        {
-            character = GetComponent<Animator>();
-            if (character == null)
-            {
-                Debug.LogError("Animator component not found on " + gameObject.name);
             }
         }
     }
@@ -139,11 +128,9 @@ public class SkillModel_Test : SkillModel_abstract
     // 攻撃処理
     public override void OnAttack()
     {
+        character.SetTrigger("Attack_01");
         if (!IsInputEnabled(ActionType.Attack)) return;
-        character.SetTrigger("Attack");
-        // 攻撃のコンボシステムはここに実装可能
     }
-
     // 水ショット処理
     public override void OnWaterShot()
     {

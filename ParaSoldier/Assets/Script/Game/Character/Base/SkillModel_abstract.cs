@@ -28,6 +28,11 @@ public enum ActionType
 
 public abstract class SkillModel_abstract : MonoBehaviour
 {
+    protected Animator character;
+    public Animator SetCharacter { set { character = value; } }
+    protected Animator weapon;
+    public Animator SetWeapon { set { weapon = value; } }
+
     // 入力制御用のフラグ
     protected ActionType enabledInputs = ActionType.All;
     
