@@ -13,41 +13,61 @@ MonoBehaviour:
   m_Name: Default Local Group
   m_EditorClassIdentifier: 
   m_GroupName: Default Local Group
-  m_GUID: 0d67cb9740c34534d9ab1910cd7c375f
+  m_GUID: edb9bf7b0ac35534fa7cb0a2e85ed9cb
   m_SerializeEntries:
-  - m_GUID: 19abb04da9e25084cad831f2ac2953bc
-    m_Address: Load
+  - m_GUID: 1570e452e869e2e42ac416b98f5c617c
+    m_Address: win
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 208f62147b87ff54bb377683db7cb46e
-    m_Address: Status_UI_Test
+  - m_GUID: 3c22d34e4dfb3174f8c19b9234a17368
+    m_Address: FinalResult
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 2a3858436cd42e04d8fe386fc6d690c5
-    m_Address: Canvas_Blank
+  - m_GUID: 5504beabc88a6304bb8190841b5586f1
+    m_Address: RojouStage
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3d04dcaba4de8d6419554fec6acae760
-    m_Address: Game
+  - m_GUID: 69469367b33b94940b220587d573f56c
+    m_Address: ResultImage
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 99c9720ab356a0642a771bea13969a05
-    m_Address: Title
+  - m_GUID: 7b934cc15a27ee54d8c81b7d89796869
+    m_Address: selectButton
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ce9b37aa972852f4197f8a80a0085aca
-    m_Address: Character_Test
+  - m_GUID: 87dc1761c3f9ac948916641cdf5d48fe
+    m_Address: PlayerTestCharacter
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 893c0dc71bd6f7f4eb5dd1de5691f2c5
+    m_Address: lose
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b4efc339d0a7a024ca20dfab75e22e3b
+    m_Address: EnemyTestCharacter
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: be571b4fc0330be4c8633530a159430b
+    m_Address: TestStage
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c35e606b3ba02984cbeaa41fbb82bc27
+    m_Address: ReadyFight
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
-  m_Settings: {fileID: 11400000, guid: c447b5207474fd54b84e3f8323ae5523, type: 2}
+  m_Settings: {fileID: 11400000, guid: abbfb515ebe231943bb1d7fad87a3c93, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: dd5060b0a6e9c2b46bece350328bf504, type: 2}
-    - {fileID: 11400000, guid: 096fff0cb21f2144499a5d65a638b069, type: 2}
+    - {fileID: 11400000, guid: 1b023542d21561d479002d1ed09cf458, type: 2}
+    - {fileID: 11400000, guid: f5ffb31f9c33c8348be36ccf55c69331, type: 2}
