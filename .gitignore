@@ -2,16 +2,17 @@
 #
 # Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
 #
-/RuleStyle/[Ll]ibrary/
-/RuleStyle/[Tt]emp/
-/RuleStyle/[Oo]bj/
-/RuleStyle/[Bb]uild/
-/RuleStyle/[Bb]uilds/
-/RuleStyle/[Ll]ogs/
-/RuleStyle/[Uu]ser[Ss]ettings/
-/RuleStyle/Assets/Main/font/TMP/SoukouMincho SDF.asset
-/RuleStyle/Assets/Main/font/TMP/SoukouMincho SDF.asset.meta
+/ParaSoldier/[Ll]ibrary/
+/ParaSoldier/[Tt]emp/
+/ParaSoldier/[Oo]bj/
+/ParaSoldier/[Bb]uild/
+/ParaSoldier/[Bb]uilds/
+/ParaSoldier/[Ll]ogs/
+/ParaSoldier/[Uu]ser[Ss]ettings/
+/ParaSoldier/Assets/Main/font/TMP/SoukouMincho SDF.asset
+/ParaSoldier/Assets/Main/font/TMP/SoukouMincho SDF.asset.meta
 
+.claude
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
 /[Mm]emoryCaptures/
