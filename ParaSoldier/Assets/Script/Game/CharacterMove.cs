@@ -37,6 +37,8 @@ public enum BlowResistLevel { Lv0 = 0, Lv1, Lv2, Lv3, Lv4 }
 public enum DamageReduceLevel { Lv0, Lv1, Lv2, Lv3, Lv4 }
 // 防御状態
 public enum GuardState { None, Transition, Guarding }
+// 攻撃タイプ
+public enum AttackType { Normal, WaterShot, Assault }
 #endregion
 
 
@@ -57,11 +59,23 @@ public class CharacterMove : MonoBehaviour
 
 
     #region モーションデータ（攻撃パターン定義）
-    [SerializeField] private AttackData Attack01 = new AttackData(CharacterState.Attack_01);
-    [SerializeField] private AttackData Attack02 = new AttackData(CharacterState.Attack_02);
-    [SerializeField] private AttackData Attack03 = new AttackData(CharacterState.Attack_03);
-    [SerializeField] private AttackData WaterShot = new AttackData(CharacterState.WaterShot);
-    [SerializeField] private AttackData Assault = new AttackData(CharacterState.Assault);
+    [SerializeField] private AttackData Attack01 = new AttackData(CharacterState.Attack_01, AttackType.Normal);
+    [SerializeField] private AttackData Attack02 = new AttackData(CharacterState.Attack_02, AttackType.Normal);
+    [SerializeField] private AttackData Attack03 = new AttackData(CharacterState.Attack_03, AttackType.Normal);
+    [SerializeField] private AttackData WaterShot = new AttackData(CharacterState.WaterShot, AttackType.WaterShot);
+    [SerializeField] private AttackData Assault = new AttackData(CharacterState.Assault, AttackType.Assault);
+    #endregion
+
+
+    #region WaterShot設定
+    [SerializeField, Header("WaterShotパーティクルシステム")]
+    private ParticleSystem waterShotParticle;
+
+    [SerializeField, Header("WaterShot専用コライダー")]
+    private Collider waterShotCollider;
+
+    [SerializeField, Header("WaterShot発射オフセット")]
+    private Vector3 waterShotOffset = Vector3.zero;
     #endregion
 
 
@@ -160,6 +174,14 @@ public class CharacterMove : MonoBehaviour
 
         while (moveData.moveDis.Value != 0)
         {
+            // ガード中は移動不能
+            if (NowState == CharacterState.Guard || NowState == CharacterState.GuardTransition)
+            {
+                character.SetBool("isWalk", false);
+                await UniTask.Yield(token);
+                continue;
+            }
+
             if (CanItBeMoved || Interrupt)
             {
                 NowState = CharacterState.Move;
@@ -218,7 +240,7 @@ public class CharacterMove : MonoBehaviour
             CharacterStatus target = col.GetComponent<CharacterStatus>();
             if (target != null)
             {
-                target.DamageReaction(spot.Damage, spot.BlowPower, spot.BlowTime);
+                target.DamageReaction(spot.Damage, spot.BlowPower, spot.BlowTime, attack.AttackType);
                 attack.CancelAll(); // 一度当たったら判定終了
             }
         });
@@ -275,14 +297,91 @@ public class CharacterMove : MonoBehaviour
     #region 水撃処理
     public void WaterShotInput()
     {
-        if (GetComponent<CharacterStatus>().CheckGage() >= 1)
+        if (Interrupt)
         {
-            GetComponent<CharacterStatus>().AddGage(-1);
-            if (Interrupt)
+            if (GetComponent<CharacterStatus>().CheckGage() >= 1)
             {
-                NonInterruptActionAsync(PlayAttackMotion(WaterShot)).Forget();
+                GetComponent<CharacterStatus>().AddGage(-1);
+
+                NonInterruptActionAsync(FireWaterShot()).Forget();
             }
         }
+    }
+
+    async UniTask FireWaterShot()
+    {
+        // WaterShotモーション再生
+        NowState = CharacterState.WaterShot;
+        character.SetTrigger(CharacterState.WaterShot.ToString());
+
+        if (waterShotParticle != null)
+        {
+            // パーティクル発射
+            waterShotParticle.Play();
+
+            // パーティクルの設定を取得
+            var main = waterShotParticle.main;
+            float lifetime = main.startLifetime.constant;
+            float speed = main.startSpeed.constant;
+
+            // 当たり判定を打ち出す
+            if (waterShotCollider != null)
+            {
+                ShootWaterShotCollider(speed, lifetime).Forget();
+            }
+        }
+
+        // 割り込み禁止時間
+        await UniTask.Delay((int)(WaterShot.NonInterruptTime * 1000), cancellationToken: token);
+    }
+
+    async UniTaskVoid ShootWaterShotCollider(float speed, float lifetime)
+    {
+        // コライダーの初期位置設定（キャラクター位置 + オフセット）
+        Vector3 startPos = transform.position + waterShotOffset;
+        waterShotCollider.transform.position = startPos;
+
+        // コライダーを有効化
+        waterShotCollider.enabled = true;
+
+        bool hasHit = false;
+        float elapsed = 0f;
+
+        // ヒット判定を購読
+        var hitSubscription = waterShotCollider
+            .OnTriggerEnterAsObservable()
+            .TakeUntilDestroy(waterShotCollider)
+            .Subscribe(col =>
+            {
+                CharacterStatus target = col.GetComponent<CharacterStatus>();
+                if (target != null)
+                {
+                    // WaterShotのダメージデータを使用
+                    target.DamageReaction(
+                        WaterShot.attackColliders[0].Damage,
+                        WaterShot.attackColliders[0].BlowPower,
+                        WaterShot.attackColliders[0].BlowTime,
+                        AttackType.WaterShot
+                    );
+                    hasHit = true;
+                }
+            });
+
+        // 生存期間中、コライダーを移動させる
+        while (elapsed < lifetime && !hasHit)
+        {
+            // 右方向に移動（キャラクターの向きを考慮）
+            waterShotCollider.transform.position += (Vector3.right * transform.localScale.x * speed) * Time.deltaTime;
+
+            elapsed += Time.deltaTime;
+            await UniTask.Yield(token);
+        }
+
+        // ヒット判定購読を解除
+        hitSubscription?.Dispose();
+
+        // コライダーを無効化
+        waterShotCollider.enabled = false;
     }
     #endregion
 
@@ -290,11 +389,12 @@ public class CharacterMove : MonoBehaviour
     #region 突進処理
     public void AssaultInput()
     {
-        if (GetComponent<CharacterStatus>().CheckGage() >= 2)
+        if (Interrupt)
         {
-            GetComponent<CharacterStatus>().AddGage(-2);
-            if (Interrupt)
+            if (GetComponent<CharacterStatus>().CheckGage() >= 3)
             {
+                GetComponent<CharacterStatus>().AddGage(-3);
+            
                 DamageReactionAsync(-1000, 0.6f).Forget();
                 NonInterruptActionAsync(PlayAttackMotion(Assault)).Forget();
             }
@@ -311,6 +411,7 @@ public class CharacterMove : MonoBehaviour
     {
         if (Interrupt)
         {
+            isGuarding = true;
             NonInterruptActionAsync(GuardAsync()).Forget();
         }
     }
@@ -333,17 +434,17 @@ public class CharacterMove : MonoBehaviour
         NowState = CharacterState.GuardTransition;
         character.SetTrigger(CharacterState.GuardTransition.ToString());
 
-        await UniTask.Delay(300, cancellationToken: guardToken); // 展開中
+        //await UniTask.Delay(300, cancellationToken: guardToken); // 展開中
 
         NowState = CharacterState.Guard;
-        isGuarding = true;
         character.SetBool("isGuard", true);
+        character.SetTrigger("Guard");
 
         // ガード中は無敵化
         SetInvincible(true);
     }
 
-    void EndGuard()
+    async void EndGuard()
     {
         isGuarding = false;
         NowState = CharacterState.Idle;
@@ -351,6 +452,11 @@ public class CharacterMove : MonoBehaviour
 
         // ガード解除時に無敵解除
         SetInvincible(false);
+
+        // ガード解除後、2フレーム間入力を受け付けない
+        Interrupt = false;
+        await UniTask.DelayFrame(2, cancellationToken: token);
+        Interrupt = true;
     }
     #endregion
 
@@ -450,7 +556,7 @@ public class CharacterMove : MonoBehaviour
     // ==============================
     // ダメージリアクション処理
     // ==============================
-    public void DamageReaction(float blowPower, float blowTime)
+    public void DamageReaction(float blowPower, float blowTime, AttackType attackType)
     {
         // 無敵中なら無視
         if (IsInvincible) return;
@@ -481,6 +587,9 @@ public class CharacterMove : MonoBehaviour
 
     public async UniTask DamageReactionAsync(float blowPower, float blowTime)
     {
+        // DamageReaction中は入力を受け付けない
+        NowState = CharacterState.DamageReaction;
+
         float startTime = Time.time;
         while (Time.time - startTime < blowTime + 0.1f)
         {
@@ -490,6 +599,9 @@ public class CharacterMove : MonoBehaviour
             }
             await UniTask.Yield(token);
         }
+
+        // DamageReaction終了後、Idleに戻る
+        NowState = CharacterState.Idle;
     }
     #endregion
 }
@@ -522,18 +634,20 @@ public class MoveData
 public class AttackData
 {
     [SerializeField, Header("判定個別管理")]
-    HitSpot[] attackColliders;
+    public HitSpot[] attackColliders;
 
     [SerializeField, Header("入力拒否時間")]
     float nonInterruptTime = 0f;
 
     public float NonInterruptTime => nonInterruptTime;
     public CharacterState MoveState { get; private set; }
+    public AttackType AttackType { get; private set; }
     private CancellationTokenSource tokenSource = new();
 
-    public AttackData(CharacterState characterState)
+    public AttackData(CharacterState characterState, AttackType attackType)
     {
         this.MoveState = characterState;
+        this.AttackType = attackType;
     }
 
     /// <summary> 全HitSpotを有効化 </summary>

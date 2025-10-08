@@ -35,6 +35,7 @@ public class PlayerInputMoveAction : CharacterStatus
 
     public void OnWaterShot(InputAction.CallbackContext context)
     {
+        Debug.Log("wwww");
         characterMove.WaterShotInput();
     }
 
@@ -45,7 +46,6 @@ public class PlayerInputMoveAction : CharacterStatus
 
     public void OnCharge(InputAction.CallbackContext context)
     {
-        Debug.Log("ccccccccccc");
         characterMove.ChargeInput();
     }
 

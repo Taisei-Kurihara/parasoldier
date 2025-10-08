@@ -35,10 +35,25 @@ public abstract class CharacterStatus : MonoBehaviour
     [HideInInspector]
     public PType OwnerType { get; set; }
 
-    public void DamageReaction(float damage, float blowPower, float blowTime)
+    public void DamageReaction(float damage, float blowPower, float blowTime, AttackType attackType)
     {
+        // ガード中の場合、ダメージを100%減衰（無効化）
+        if (currentState.Value == CharacterState.Guard && attackType != AttackType.Assault)
+        {
+            if(attackType == AttackType.WaterShot)
+            {
+                AddGage(1);
+            }
+            Debug.Log($"Guard! Attack blocked: {attackType}");
+            return;
+        }
+
+        damage = (attackType == AttackType.Assault) ? damage * 1.5f : damage;
+        blowPower = (attackType == AttackType.Assault) ? blowPower * 1.5f : blowPower;
+
+        Debug.Log($"Damage received from: {attackType}");
         hp.Value -= damage;
-        characterMove.DamageReaction(blowPower, blowTime);
+        characterMove.DamageReaction(blowPower, blowTime, attackType);
     }
 
     public void AddGage(int amount)
