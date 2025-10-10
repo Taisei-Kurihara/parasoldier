@@ -183,8 +183,10 @@ public class CharacterMove : MonoBehaviour
 
         while (moveData.moveDis.Value != 0)
         {
-            // ガード中は移動不能
-            if (NowState == CharacterState.Guard || NowState == CharacterState.GuardTransition)
+            // ガード中またはダメージリアクション中は移動不能
+            if (NowState == CharacterState.Guard ||
+                NowState == CharacterState.GuardTransition ||
+                NowState == CharacterState.DamageReaction)
             {
                 character.SetBool("isWalk", false);
                 await UniTask.Yield(token);

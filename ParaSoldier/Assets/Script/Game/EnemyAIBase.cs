@@ -4,9 +4,10 @@ using UnityEngine;
 
 public enum enemyAILv
 {
-    Approach,         // �ߊ�邾��
-    ApproachAndAttack,// �߂Â��čU��
-    CombatLv1         // ����`�� Lv1
+    Approach,         // 接近するだけ
+    ApproachAndAttack,// 近づいて攻撃
+    CombatLv1,        // 戦闘パターン Lv1
+    CombatLv2         // 戦闘パターン Lv2 (フェイント、カウンター、様子見)
 }
 
 
@@ -39,6 +40,9 @@ public class EnemyAIBase : CharacterStatus
                 break;
             case enemyAILv.CombatLv1:
                 CombatLv1().Forget();
+                break;
+            case enemyAILv.CombatLv2:
+                CombatLv2().Forget();
                 break;
             default:
                 Approach().Forget();
@@ -77,37 +81,174 @@ public class EnemyAIBase : CharacterStatus
     {
         var playerStatus = GameManager.Instance.PlayerTransform.GetComponent<CharacterStatus>();
         var playerState = playerStatus.currentState;
+        bool isEvading = false; // 回避中フラグ
+        bool attackDetected = false; // 攻撃検知フラグ
+        float attackDetectedTime = 0f; // 攻撃検知時刻
+        float evadeStartDelay = 0f; // 回避開始までの遅延時間
 
         while (true)
         {
             float distance = Vector3.Distance(transform.position, GameManager.Instance.PlayerTransform.position);
 
-            // �v���C���[���U�����n�߂��班���x��ċ������Ƃ�
-            if (playerState.Value.ToString().StartsWith("Attack"))
+            // プレイヤーが攻撃を始めた瞬間を検知
+            if (playerState.Value.ToString().StartsWith("Attack") && !attackDetected && !isEvading && distance <= 3f)
             {
-                float wait = UnityEngine.Random.Range(0.25f, 0.5f);
-                await UniTask.Delay((int)(wait * 1000));
+                attackDetected = true;
+                attackDetectedTime = Time.time;
 
-                // �����
+                // 回避開始までの遅延時間を設定
+                float baseframe = 1f / 60f;
+                float min = baseframe * 10;
+                float max = baseframe * 30;
+                evadeStartDelay = UnityEngine.Random.Range(min, max);
+            }
+
+            // 攻撃検知フラグが立っている && 遅延時間経過 => 回避開始
+            if (attackDetected && Time.time >= attackDetectedTime + evadeStartDelay)
+            {
+                isEvading = true;
+                attackDetected = false; // フラグを折る
+
+                // 後退
                 characterMove.moveData.moveDis.Value = 1f;
+                await UniTask.Delay(400);
 
-                // �U���I��肻���ɂȂ�����߂Â�
-                await UniTask.Delay(500);
-                characterMove.moveData.moveDis.Value = -1f;
+                // 移動停止
+                characterMove.moveData.moveDis.Value = 0f;
+
+                // 攻撃終了待機
+                await UniTask.WaitUntil(() => !playerState.Value.ToString().StartsWith("Attack"));
+
+                isEvading = false;
             }
-            else
+            else if (!isEvading && !attackDetected)
             {
-                // �v���C���[���U�����Ă��Ȃ��ꍇ�͋߂Â�
-                characterMove.moveData.moveDis.Value = (distance > 2f) ? -1f : 0f;
+                // 通常行動: 距離に応じて接近または攻撃
+                if (distance > 2f)
+                {
+                    // 接近
+                    characterMove.moveData.moveDis.Value = -1f;
+                }
+                else if (distance <= 2f)
+                {
+                    // 攻撃範囲内なら停止して攻撃
+                    characterMove.moveData.moveDis.Value = 0f;
+                    characterMove.AttackInput();
+                    await UniTask.Delay(500); // 攻撃後の硬直時間
+                }
             }
 
-            // �U���͈͂ɓ����Ă�����U��
-            if (distance <= 2f)
+            await UniTask.Delay(100);
+        }
+    }
+
+    async UniTask CombatLv2()
+    {
+        var playerStatus = GameManager.Instance.PlayerTransform.GetComponent<CharacterStatus>();
+        var playerState = playerStatus.currentState;
+        bool isEvading = false;
+        bool isCounterWaiting = false;
+        float lastActionTime = 0f;
+
+        while (true)
+        {
+            float distance = Vector3.Distance(transform.position, GameManager.Instance.PlayerTransform.position);
+            float currentTime = Time.time;
+
+            // プレイヤーの攻撃に対する反応
+            if (playerState.Value.ToString().StartsWith("Attack") && !isEvading && !isCounterWaiting && distance <= 3.5f)
             {
-                characterMove.AttackInput();
+                // ランダムで回避またはカウンター待機を選択
+                float reaction = UnityEngine.Random.value;
+
+                if (reaction < 0.6f) // 60%で回避
+                {
+                    isEvading = true;
+
+                    float wait = UnityEngine.Random.Range(0.05f, 0.2f);
+                    await UniTask.Delay((int)(wait * 1000));
+
+                    // 後退
+                    characterMove.moveData.moveDis.Value = 1f;
+                    await UniTask.Delay(350);
+
+                    characterMove.moveData.moveDis.Value = 0f;
+                    await UniTask.WaitUntil(() => !playerState.Value.ToString().StartsWith("Attack"));
+
+                    isEvading = false;
+                }
+                else // 40%でカウンター待機
+                {
+                    isCounterWaiting = true;
+
+                    characterMove.moveData.moveDis.Value = 0f; // 停止
+                    await UniTask.WaitUntil(() => !playerState.Value.ToString().StartsWith("Attack"));
+
+                    // カウンター攻撃
+                    if (distance <= 2.5f)
+                    {
+                        characterMove.AttackInput();
+                        await UniTask.Delay(600);
+                    }
+
+                    isCounterWaiting = false;
+                }
+
+                lastActionTime = currentTime;
+            }
+            else if (!isEvading && !isCounterWaiting)
+            {
+                // 通常行動
+                if (distance > 3f)
+                {
+                    // 遠距離: 接近
+                    characterMove.moveData.moveDis.Value = -1f;
+                }
+                else if (distance > 2f && distance <= 3f)
+                {
+                    // 中距離: フェイント動作（前後移動）
+                    if (currentTime - lastActionTime > 1.5f)
+                    {
+                        float feint = UnityEngine.Random.value;
+                        if (feint < 0.3f) // 30%でフェイント
+                        {
+                            // 接近してすぐ後退
+                            characterMove.moveData.moveDis.Value = -1f;
+                            await UniTask.Delay(200);
+                            characterMove.moveData.moveDis.Value = 1f;
+                            await UniTask.Delay(150);
+                            characterMove.moveData.moveDis.Value = 0f;
+
+                            lastActionTime = currentTime;
+                        }
+                        else
+                        {
+                            characterMove.moveData.moveDis.Value = -1f;
+                        }
+                    }
+                    else
+                    {
+                        characterMove.moveData.moveDis.Value = -1f;
+                    }
+                }
+                else if (distance <= 2f)
+                {
+                    // 近距離: 攻撃
+                    characterMove.moveData.moveDis.Value = 0f;
+
+                    // 様子見（20%の確率で少し待つ）
+                    if (UnityEngine.Random.value < 0.2f && currentTime - lastActionTime > 2f)
+                    {
+                        await UniTask.Delay(UnityEngine.Random.Range(300, 600));
+                    }
+
+                    characterMove.AttackInput();
+                    await UniTask.Delay(500);
+                    lastActionTime = currentTime;
+                }
             }
 
-            await UniTask.Delay(200);
+            await UniTask.Delay(80);
         }
     }
 
