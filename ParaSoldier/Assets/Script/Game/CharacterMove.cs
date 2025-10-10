@@ -445,8 +445,6 @@ public class CharacterMove : MonoBehaviour
         NowState = CharacterState.GuardTransition;
         character.SetTrigger(CharacterState.GuardTransition.ToString());
 
-        //await UniTask.Delay(300, cancellationToken: guardToken); // 展開中
-
         NowState = CharacterState.Guard;
         character.SetBool("isGuard", true);
         parasol.SetBool("Open", true);
