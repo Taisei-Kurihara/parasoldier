@@ -48,33 +48,42 @@ public enum AttackType { Normal, WaterShot, Assault }
 /// </summary>
 public class CharacterMove : MonoBehaviour
 {
-    [SerializeField]
-    Animator character; // アニメーション制御用
+    [SerializeField, Header("キャラクターアニメーター"), Tooltip("キャラクター本体のアニメーター")]
+    Animator character;
 
-    [SerializeField]
-    Animator parasol; // アニメーション制御用
+    [SerializeField, Header("パラソルアニメーター"), Tooltip("パラソルのアニメーター")]
+    Animator parasol;
 
     CancellationToken token; // 破棄検知用のキャンセルトークン
     Rigidbody rigidbody;     // キャラ移動用の物理ボディ
 
 
     #region モーションデータ（攻撃パターン定義）
-    [SerializeField] private AttackData Attack01 = new AttackData(CharacterState.Attack_01, AttackType.Normal);
-    [SerializeField] private AttackData Attack02 = new AttackData(CharacterState.Attack_02, AttackType.Normal);
-    [SerializeField] private AttackData Attack03 = new AttackData(CharacterState.Attack_03, AttackType.Normal);
-    [SerializeField] private AttackData WaterShot = new AttackData(CharacterState.WaterShot, AttackType.WaterShot);
-    [SerializeField] private AttackData Assault = new AttackData(CharacterState.Assault, AttackType.Assault);
+    [SerializeField, Header("攻撃1"), Tooltip("1段目の通常攻撃データ")]
+    private AttackData Attack01 = new AttackData(CharacterState.Attack_01, AttackType.Normal);
+
+    [SerializeField, Header("攻撃2"), Tooltip("2段目の通常攻撃データ")]
+    private AttackData Attack02 = new AttackData(CharacterState.Attack_02, AttackType.Normal);
+
+    [SerializeField, Header("攻撃3"), Tooltip("3段目の通常攻撃データ")]
+    private AttackData Attack03 = new AttackData(CharacterState.Attack_03, AttackType.Normal);
+
+    [SerializeField, Header("水撃"), Tooltip("水撃攻撃データ(ゲージ1消費)")]
+    private AttackData WaterShot = new AttackData(CharacterState.WaterShot, AttackType.WaterShot);
+
+    [SerializeField, Header("突進"), Tooltip("突進攻撃データ(ゲージ3消費)")]
+    private AttackData Assault = new AttackData(CharacterState.Assault, AttackType.Assault);
     #endregion
 
 
     #region WaterShot設定
-    [SerializeField, Header("WaterShotパーティクルシステム")]
+    [SerializeField, Header("WaterShotパーティクルシステム"), Tooltip("水撃のパーティクルエフェクト")]
     private ParticleSystem waterShotParticle;
 
-    [SerializeField, Header("WaterShot専用コライダー")]
+    [SerializeField, Header("WaterShot専用コライダー"), Tooltip("水撃の当たり判定用コライダー")]
     private Collider waterShotCollider;
 
-    [SerializeField, Header("WaterShot発射オフセット")]
+    [SerializeField, Header("WaterShot発射オフセット"), Tooltip("水撃の発射位置オフセット(キャラクター位置からの相対座標)")]
     private Vector3 waterShotOffset = Vector3.zero;
     #endregion
 
@@ -164,7 +173,7 @@ public class CharacterMove : MonoBehaviour
 
 
     #region 移動処理
-    [SerializeField]
+    [SerializeField, Header("移動データ"), Tooltip("キャラクターの移動速度などの設定")]
     public MoveData moveData = new MoveData(100);
 
     /// <summary> 移動処理ループ </summary>
@@ -185,7 +194,7 @@ public class CharacterMove : MonoBehaviour
             if (CanItBeMoved || Interrupt)
             {
                 NowState = CharacterState.Move;
-                rigidbody.linearVelocity = ((Vector3.right * moveData.moveDis.Value) * moveData.Speed) * Time.deltaTime;
+                rigidbody.linearVelocity = (Vector3.right * moveData.moveDis.Value) * moveData.Speed;
             }
 
             character.SetBool("isWalk", (CanItBeMoved || Interrupt));
@@ -524,8 +533,11 @@ public class CharacterMove : MonoBehaviour
     // ==============================
     // 無敵状態管理
     // ==============================
-    [SerializeField] private bool isInvincible = false;
-    [SerializeField] private float invincibleTime = 1.0f; // デフォルトの無敵時間
+    [SerializeField, Header("無敵状態"), Tooltip("現在無敵状態かどうか(デバッグ用)")]
+    private bool isInvincible = false;
+
+    [SerializeField, Header("無敵時間"), Tooltip("ダメージリアクション後の無敵時間(秒)")]
+    private float invincibleTime = 1.0f;
 
     public bool IsInvincible => isInvincible;
 
@@ -614,7 +626,7 @@ public class CharacterMove : MonoBehaviour
 [System.Serializable]
 public class MoveData
 {
-    [SerializeField]
+    [SerializeField, Header("移動速度"), Tooltip("キャラクターの移動速度")]
     float speed = 5f;
     public float Speed { get { return speed; } }
 
@@ -633,10 +645,10 @@ public class MoveData
 [System.Serializable]
 public class AttackData
 {
-    [SerializeField, Header("判定個別管理")]
+    [SerializeField, Header("判定個別管理"), Tooltip("攻撃判定のコライダーと各種パラメータの配列")]
     public HitSpot[] attackColliders;
 
-    [SerializeField, Header("入力拒否時間")]
+    [SerializeField, Header("入力拒否時間"), Tooltip("攻撃モーション中に次の入力を受け付けない時間（秒）")]
     float nonInterruptTime = 0f;
 
     public float NonInterruptTime => nonInterruptTime;
@@ -677,18 +689,25 @@ public class AttackData
 [System.Serializable]
 public class HitSpot
 {
-    [SerializeField]
+    [SerializeField, Header("攻撃コライダー"), Tooltip("攻撃判定に使用するコライダー")]
     Collider attackCollider;
 
-    [SerializeField] float startDelayTime = 0.5f; // 発生までの時間
-    [SerializeField] float endTime = 1f;   // 判定持続時間
-    [SerializeField] float damage = 10f;  // ダメージ
+    [SerializeField, Header("発生時間"), Tooltip("攻撃判定が発生するまでの遅延時間(秒)")]
+    float startDelayTime = 0.5f;
+
+    [SerializeField, Header("持続時間"), Tooltip("攻撃判定が発生してから持続する時間(秒)")]
+    float endTime = 1f;
+
+    [SerializeField, Header("ダメージ"), Tooltip("この攻撃が与えるダメージ量")]
+    float damage = 10f;
     public float Damage => damage;
 
-    [SerializeField] float blowPower = 2000f; // 吹き飛び力
+    [SerializeField, Header("吹き飛び力"), Tooltip("攻撃時の吹き飛び力(大きいほど遠くへ飛ばす)")]
+    float blowPower = 2000f;
     public float BlowPower => blowPower;
 
-    [SerializeField] float blowTime = 0.5f; // 吹き飛び時間
+    [SerializeField, Header("吹き飛び時間"), Tooltip("吹き飛び効果の持続時間(秒)")]
+    float blowTime = 0.5f;
     public float BlowTime => blowTime;
 
     private IDisposable triggerSubscription;
