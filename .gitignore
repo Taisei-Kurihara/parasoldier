@@ -9,8 +9,6 @@
 /ParaSoldier/[Bb]uilds/
 /ParaSoldier/[Ll]ogs/
 /ParaSoldier/[Uu]ser[Ss]ettings/
-/ParaSoldier/Assets/Main/font/TMP/SoukouMincho SDF.asset
-/ParaSoldier/Assets/Main/font/TMP/SoukouMincho SDF.asset.meta
 
 .claude
 # MemoryCaptures can get excessive in size.
@@ -61,7 +59,3 @@ sysinfo.txt
 
 # Crashlytics generated file
 crashlytics-build.properties
-
-# Temporary auto-generated Android Assets
-/[Aa]ssets/[Ss]treamingAssets/aa.meta
-/[Aa]ssets/[Ss]treamingAssets/aa/*
