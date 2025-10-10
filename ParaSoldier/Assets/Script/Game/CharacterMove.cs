@@ -449,6 +449,7 @@ public class CharacterMove : MonoBehaviour
 
         NowState = CharacterState.Guard;
         character.SetBool("isGuard", true);
+        parasol.SetBool("Open", true);
         character.SetTrigger("Guard");
 
         // ガード中は無敵化
@@ -460,6 +461,7 @@ public class CharacterMove : MonoBehaviour
         isGuarding = false;
         NowState = CharacterState.Idle;
         character.SetBool("isGuard", false);
+        parasol.SetBool("Open", false);
 
         // ガード解除時に無敵解除
         SetInvincible(false);
