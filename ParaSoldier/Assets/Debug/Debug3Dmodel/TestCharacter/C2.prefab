@@ -958,14 +958,14 @@ MonoBehaviour:
       endTime: 1
       damage: 8
       blowPower: 1000
-      blowTime: 0.5
+      blowTime: 1
     nonInterruptTime: 1
   Assault:
     attackColliders:
     - attackCollider: {fileID: 4286194881357124056}
       startDelayTime: 0
       endTime: 1
-      damage: 10
+      damage: 20
       blowPower: 5000
       blowTime: 0.3
     nonInterruptTime: 1
@@ -973,7 +973,7 @@ MonoBehaviour:
   waterShotCollider: {fileID: 5767587080579371335}
   waterShotOffset: {x: 0, y: 0, z: 0}
   moveData:
-    speed: 10
+    speed: 13
   isInvincible: 0
   invincibleTime: 1
 --- !u!114 &4522058589535634026
