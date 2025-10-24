@@ -462,12 +462,17 @@ public class CharacterMove : MonoBehaviour
 
     private int currentGuardHitCount = 0;
 
+    private float lastGuardEndTime = 0;
+
     public void GuardInput()
     {
-        if (Interrupt)
+        if (lastGuardEndTime + Guard.NonInterruptTime <= Time.time)
         {
-            isGuarding = true;
-            NonInterruptActionAsync(GuardAsync()).Forget();
+            if (Interrupt)
+            {
+                isGuarding = true;
+                GuardAsync().Forget();
+            }
         }
     }
 
@@ -475,6 +480,7 @@ public class CharacterMove : MonoBehaviour
     {
         if (isGuarding)
         {
+            lastGuardEndTime = Time.time;
             guardTokenSource?.Cancel();
             EndGuard();
         }
@@ -625,7 +631,7 @@ public class CharacterMove : MonoBehaviour
         bool completed = false;
         try
         {
-            await UniTask.Delay(1000, cancellationToken: chargeToken);
+            await UniTask.Delay(333, cancellationToken: chargeToken);
             completed = true;
         }
         catch (OperationCanceledException) { }

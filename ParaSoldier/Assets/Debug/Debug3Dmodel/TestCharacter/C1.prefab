@@ -895,37 +895,37 @@ MonoBehaviour:
     attackColliders:
     - attackCollider: {fileID: 2301610739696488987}
       startDelayTime: 0
-      endTime: 0.5
+      endTime: 0.33
       damage: 6
       blowPower: 1000
       blowTime: 0.5
-    nonInterruptTime: 0.5
+    nonInterruptTime: 0.33
     hitSound: {fileID: 8300000, guid: 9eb8bfdc4414f1442af71a0b2f1a20ae, type: 3}
   Attack02:
     attackColliders:
     - attackCollider: {fileID: 2301610739696488987}
       startDelayTime: 0
-      endTime: 0.6666667
+      endTime: 0.33
       damage: 7
       blowPower: 1000
       blowTime: 0.5
-    nonInterruptTime: 0.6666667
+    nonInterruptTime: 0.33
     hitSound: {fileID: 8300000, guid: 9eb8bfdc4414f1442af71a0b2f1a20ae, type: 3}
   Attack03:
     attackColliders:
     - attackCollider: {fileID: 2301610739696488987}
       startDelayTime: 0
-      endTime: 1
+      endTime: 0.33
       damage: 8
       blowPower: 2000
       blowTime: 0.6
     - attackCollider: {fileID: 4286194881357124056}
       startDelayTime: 0
-      endTime: 0.66
+      endTime: 0.33
       damage: 8
       blowPower: 2000
       blowTime: 0.6
-    nonInterruptTime: 1
+    nonInterruptTime: 0.33
     hitSound: {fileID: 8300000, guid: 9eb8bfdc4414f1442af71a0b2f1a20ae, type: 3}
   WaterShot:
     attackColliders:
@@ -941,21 +941,21 @@ MonoBehaviour:
     attackColliders:
     - attackCollider: {fileID: 4286194881357124056}
       startDelayTime: 0
-      endTime: 0.66
+      endTime: 0.33
       damage: 20
       blowPower: 5000
       blowTime: 0.3
-    nonInterruptTime: 0.66
+    nonInterruptTime: 0.33
     hitSound: {fileID: 8300000, guid: 2f8b34137e7542642be7300b296edc28, type: 3}
   Guard:
     attackColliders:
     - attackCollider: {fileID: 4286194881357124056}
       startDelayTime: 0
-      endTime: 0.5
+      endTime: 0.33
       damage: 0
       blowPower: 1000
       blowTime: 2
-    nonInterruptTime: 0
+    nonInterruptTime: 0.33
     hitSound: {fileID: 8300000, guid: 6f5a0c7eec1bf0449877a80f29042d9d, type: 3}
   chargeSound: {fileID: 8300000, guid: 1f237d3d2fbe0644a984c64d73905ca9, type: 3}
   waterShotParticle: {fileID: 3128842588030383256}

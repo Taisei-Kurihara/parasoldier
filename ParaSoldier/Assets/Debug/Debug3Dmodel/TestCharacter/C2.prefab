@@ -922,37 +922,37 @@ MonoBehaviour:
     attackColliders:
     - attackCollider: {fileID: 5008428804375799716}
       startDelayTime: 0
-      endTime: 1
+      endTime: 0.33
       damage: 6
       blowPower: 1000
       blowTime: 0.5
-    nonInterruptTime: 1
+    nonInterruptTime: 0.33
     hitSound: {fileID: 8300000, guid: 9eb8bfdc4414f1442af71a0b2f1a20ae, type: 3}
   Attack02:
     attackColliders:
     - attackCollider: {fileID: 5008428804375799716}
       startDelayTime: 0
-      endTime: 1
+      endTime: 0.33
       damage: 7
       blowPower: 1000
       blowTime: 0.5
-    nonInterruptTime: 1
+    nonInterruptTime: 0.33
     hitSound: {fileID: 8300000, guid: 9eb8bfdc4414f1442af71a0b2f1a20ae, type: 3}
   Attack03:
     attackColliders:
     - attackCollider: {fileID: 5008428804375799716}
       startDelayTime: 0
-      endTime: 1
+      endTime: 0.33
       damage: 8
       blowPower: 2000
       blowTime: 0.6
     - attackCollider: {fileID: 4286194881357124056}
       startDelayTime: 0
-      endTime: 0.66
+      endTime: 0.33
       damage: 8
       blowPower: 2000
       blowTime: 0.6
-    nonInterruptTime: 1
+    nonInterruptTime: 0.33
     hitSound: {fileID: 8300000, guid: 9eb8bfdc4414f1442af71a0b2f1a20ae, type: 3}
   WaterShot:
     attackColliders:
@@ -968,11 +968,11 @@ MonoBehaviour:
     attackColliders:
     - attackCollider: {fileID: 4286194881357124056}
       startDelayTime: 0
-      endTime: 1
+      endTime: 0.33
       damage: 10
       blowPower: 5000
       blowTime: 0.3
-    nonInterruptTime: 1
+    nonInterruptTime: 0.33
     hitSound: {fileID: 8300000, guid: 2f8b34137e7542642be7300b296edc28, type: 3}
   Guard:
     attackColliders:
