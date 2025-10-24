@@ -56,6 +56,7 @@ public class CharacterMove : MonoBehaviour
 
     CancellationToken token; // 破棄検知用のキャンセルトークン
     Rigidbody rigidbody;     // キャラ移動用の物理ボディ
+    AudioSource audioSource; // 効果音再生用のオーディオソース
 
 
     #region モーションデータ（攻撃パターン定義）
@@ -73,6 +74,12 @@ public class CharacterMove : MonoBehaviour
 
     [SerializeField, Header("突進"), Tooltip("突進攻撃データ(ゲージ3消費)")]
     private AttackData Assault = new AttackData(CharacterState.Assault, AttackType.Assault);
+
+    [SerializeField, Header("ガード"), Tooltip("ガード用データ")]
+    private AttackData Guard = new AttackData(CharacterState.Guard, AttackType.Normal);
+
+    [SerializeField, Header("チャージ効果音"), Tooltip("チャージ開始時に再生する効果音")]
+    private AudioClip chargeSound;
     #endregion
 
 
@@ -85,7 +92,12 @@ public class CharacterMove : MonoBehaviour
 
     [SerializeField, Header("WaterShot発射オフセット"), Tooltip("水撃の発射位置オフセット(キャラクター位置からの相対座標)")]
     private Vector3 waterShotOffset = Vector3.zero;
+
+    [SerializeField, Header("WaterShotヒット効果音"), Tooltip("WaterShotの飛び物が敵に当たった時の効果音")]
+    private AudioClip waterShotHitSound;
     #endregion
+
+
 
 
     #region 入力管理
@@ -155,6 +167,13 @@ public class CharacterMove : MonoBehaviour
         rigidbody = GetComponent<Rigidbody>();
 
         if (rigidbody == null) { Debug.LogError(gameObject.name + ":none rb"); }
+
+        // AudioSourceを追加して保持.
+        audioSource = gameObject.GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
 
         Init();
     }
@@ -252,6 +271,13 @@ public class CharacterMove : MonoBehaviour
             if (target != null)
             {
                 target.DamageReaction(spot.Damage, spot.BlowPower, spot.BlowTime, attack.AttackType);
+
+                // ヒット時効果音を再生.
+                if (attack.hitSound != null && audioSource != null)
+                {
+                    audioSource.PlayOneShot(attack.hitSound);
+                }
+
                 attack.CancelAll(); // 一度当たったら判定終了
             }
         });
@@ -325,6 +351,12 @@ public class CharacterMove : MonoBehaviour
         NowState = CharacterState.WaterShot;
         character.SetTrigger(CharacterState.WaterShot.ToString());
 
+        // 水撃開始時に効果音を再生.
+        if (WaterShot.hitSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(WaterShot.hitSound);
+        }
+
         if (waterShotParticle != null)
         {
             // パーティクル発射
@@ -374,6 +406,13 @@ public class CharacterMove : MonoBehaviour
                         WaterShot.attackColliders[0].BlowTime,
                         AttackType.WaterShot
                     );
+
+                    // WaterShotヒット時効果音を再生.
+                    if (waterShotHitSound != null && audioSource != null)
+                    {
+                        audioSource.PlayOneShot(waterShotHitSound);
+                    }
+
                     hasHit = true;
                 }
             });
@@ -450,6 +489,30 @@ public class CharacterMove : MonoBehaviour
         parasol.SetBool("Open", true);
         character.SetTrigger("Guard");
 
+        // ガード開始時に効果音を再生.
+        if (Guard.hitSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(Guard.hitSound);
+        }
+
+        // ガード用AttackDataを発動.
+        Guard.ActivateAll((col, spot) =>
+        {
+            CharacterStatus target = col.GetComponent<CharacterStatus>();
+            if (target != null)
+            {
+                target.DamageReaction(spot.Damage, spot.BlowPower, spot.BlowTime, Guard.AttackType);
+
+                // ヒット時効果音を再生.
+                if (Guard.hitSound != null && audioSource != null)
+                {
+                    audioSource.PlayOneShot(Guard.hitSound);
+                }
+
+                Guard.CancelAll();
+            }
+        });
+
         // ガード中は無敵化
         SetInvincible(true);
     }
@@ -460,6 +523,9 @@ public class CharacterMove : MonoBehaviour
         NowState = CharacterState.Idle;
         character.SetBool("isGuard", false);
         parasol.SetBool("Open", false);
+
+        // ガード用AttackDataをキャンセル.
+        Guard.CancelAll();
 
         // ガード解除時に無敵解除
         SetInvincible(false);
@@ -504,6 +570,12 @@ public class CharacterMove : MonoBehaviour
         NowState = CharacterState.Charge;
         isCharging = true;
         character.SetTrigger("isCharge");
+
+        // チャージ開始時に効果音を再生.
+        if (chargeSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(chargeSound);
+        }
 
         bool completed = false;
         try
@@ -652,6 +724,9 @@ public class AttackData
 
     [SerializeField, Header("入力拒否時間"), Tooltip("攻撃モーション中に次の入力を受け付けない時間（秒）")]
     float nonInterruptTime = 0f;
+
+    [SerializeField, Header("ヒット時効果音"), Tooltip("攻撃がヒットした時に再生する効果音")]
+    public AudioClip hitSound;
 
     public float NonInterruptTime => nonInterruptTime;
     public CharacterState MoveState { get; private set; }
