@@ -457,6 +457,11 @@ public class CharacterMove : MonoBehaviour
     CancellationTokenSource guardTokenSource;
     bool isGuarding = false;
 
+    [SerializeField, Header("ガードブレイク回数"), Tooltip("何回攻撃を受けるとガードがブレイクするか")]
+    private int guardBreakCount = 3;
+
+    private int currentGuardHitCount = 0;
+
     public void GuardInput()
     {
         if (Interrupt)
@@ -480,6 +485,9 @@ public class CharacterMove : MonoBehaviour
         guardTokenSource?.Cancel();
         guardTokenSource = new CancellationTokenSource();
         var guardToken = guardTokenSource.Token;
+
+        // ガード開始時にヒットカウントをリセット.
+        currentGuardHitCount = 0;
 
         NowState = CharacterState.GuardTransition;
         character.SetTrigger(CharacterState.GuardTransition.ToString());
@@ -513,11 +521,48 @@ public class CharacterMove : MonoBehaviour
             }
         });
 
-        // ガード中は無敵化
-        SetInvincible(true);
+        // ガード中は無敵化(ガード専用).
+        SetGuardInvincible(true);
+    }
+
+    /// <summary>
+    /// ガード中に攻撃を受けたときの処理.
+    /// </summary>
+    public void OnGuardHit(float blowPower, float blowTime, AttackType attackType)
+    {
+        if (!isGuarding) return;
+
+        currentGuardHitCount++;
+        Debug.Log($"ガードヒット回数: {currentGuardHitCount}/{guardBreakCount}");
+        // ガードブレイク判定.
+        if (currentGuardHitCount >= guardBreakCount || attackType == AttackType.Assault)
+        {
+            Debug.Log("ガードブレイク!");
+            GuardBreak(blowPower, blowTime, attackType).Forget();
+        }
+    }
+
+    /// <summary>
+    /// ガードブレイク時の処理.
+    /// </summary>
+    async UniTask GuardBreak(float blowPower, float blowTime, AttackType attackType)
+    {
+        // ガード状態を強制解除.
+        guardTokenSource?.Cancel();
+
+        // ガード解除を待機してから通常のダメージリアクションを実行.
+        await EndGuardAsync();
+
+        // 通常のダメージリアクションを実行.
+        DamageReaction(blowPower*0.5f, blowTime * 0.5f, attackType);
     }
 
     async void EndGuard()
+    {
+        await EndGuardAsync();
+    }
+
+    async UniTask EndGuardAsync()
     {
         isGuarding = false;
         NowState = CharacterState.Idle;
@@ -527,8 +572,8 @@ public class CharacterMove : MonoBehaviour
         // ガード用AttackDataをキャンセル.
         Guard.CancelAll();
 
-        // ガード解除時に無敵解除
-        SetInvincible(false);
+        // ガード解除時に無敵解除(ガード専用).
+        SetGuardInvincible(false);
 
         // ガード解除後、2フレーム間入力を受け付けない
         Interrupt = false;
@@ -610,22 +655,34 @@ public class CharacterMove : MonoBehaviour
     [SerializeField, Header("無敵状態"), Tooltip("現在無敵状態かどうか(デバッグ用)")]
     private bool isInvincible = false;
 
+    [SerializeField, Header("ガード無敵状態"), Tooltip("ガード中の無敵状態かどうか(デバッグ用)")]
+    private bool isGuardInvincible = false;
+
     [SerializeField, Header("無敵時間"), Tooltip("ダメージリアクション後の無敵時間(秒)")]
     private float invincibleTime = 1.0f;
 
-    public bool IsInvincible => isInvincible;
+    public bool IsInvincible => isInvincible || isGuardInvincible;
 
     /// <summary>
-    /// 無敵状態を任意に切り替える
+    /// 無敵状態を任意に切り替える.
     /// </summary>
     public void SetInvincible(bool value)
     {
         isInvincible = value;
-        Debug.Log($"Invincible: {value}");
+        Debug.Log($"Invincible: {value} キャラ:{gameObject.name}");
     }
 
     /// <summary>
-    /// 一定時間だけ無敵化する
+    /// ガード用無敵状態を任意に切り替える.
+    /// </summary>
+    public void SetGuardInvincible(bool value)
+    {
+        isGuardInvincible = value;
+        Debug.Log($"GuardInvincible: {value} キャラ:{gameObject.name}");
+    }
+
+    /// <summary>
+    /// 一定時間だけ無敵化する.
     /// </summary>
     public async UniTask InvincibleForSeconds(float seconds, CancellationToken token)
     {
@@ -644,17 +701,17 @@ public class CharacterMove : MonoBehaviour
     // ==============================
     public void DamageReaction(float blowPower, float blowTime, AttackType attackType)
     {
-        // 無敵中なら無視
+        // 無敵中なら無視.
         if (IsInvincible) return;
 
-        // 各アクションを強制キャンセル
+        // 各アクションを強制キャンセル.
         attackTokenSource?.Cancel();
         guardTokenSource?.Cancel();
         chargeTokenSource?.Cancel();
         EndGuard();
         EndCharge();
 
-        // 攻撃判定キャンセル
+        // 攻撃判定キャンセル.
         Attack01.CancelAll();
         Attack02.CancelAll();
         Attack03.CancelAll();
@@ -664,10 +721,10 @@ public class CharacterMove : MonoBehaviour
 
         character.SetTrigger(CharacterState.DamageReaction.ToString());
 
-        // ダメージリアクション開始
+        // ダメージリアクション開始.
         NonInterruptActionAsync(DamageReactionAsync(blowPower, blowTime)).Forget();
 
-        // 無敵化処理（吹き飛び時間＋α）
+        // 無敵化処理（吹き飛び時間＋α）.
         InvincibleForSeconds(blowTime + invincibleTime, token).Forget();
     }
 

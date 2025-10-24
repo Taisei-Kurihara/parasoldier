@@ -32,7 +32,7 @@ public class EnemyAIBase : CharacterStatus
 
     public void Lv()
     {
-
+        aiLevel = enemyAILv.CombatLv1;
         switch (aiLevel)
         {
             case enemyAILv.ApproachAndAttack:
@@ -81,60 +81,137 @@ public class EnemyAIBase : CharacterStatus
     {
         var playerStatus = GameManager.Instance.PlayerTransform.GetComponent<CharacterStatus>();
         var playerState = playerStatus.currentState;
-        bool isEvading = false; // 回避中フラグ
-        bool attackDetected = false; // 攻撃検知フラグ
-        float attackDetectedTime = 0f; // 攻撃検知時刻
-        float evadeStartDelay = 0f; // 回避開始までの遅延時間
-
+        bool isActing = false; // 行動中フラグ.
+        bool attackDetected = false; // 攻撃検知フラグ.
+        float attackDetectedTime = 0f; // 攻撃検知時刻.
+        float reactionDelay = 0f; // 反応開始までの遅延時間.
+        float lastActionTime = 0f; // 最後の行動時刻.
+        float reaction = 0;
         while (true)
         {
             float distance = Vector3.Distance(transform.position, GameManager.Instance.PlayerTransform.position);
+            int currentGage = GetComponent<CharacterStatus>().CheckGage();
 
-            // プレイヤーが攻撃を始めた瞬間を検知
-            if (playerState.Value.ToString().StartsWith("Attack") && !attackDetected && !isEvading && distance <= 3f)
+            // プレイヤーが攻撃を始めた瞬間を検知.
+            if (playerState.Value.ToString().StartsWith("Attack") && !attackDetected && !isActing && distance <= 4f)
             {
+                // 40%の確率でガード、60%の確率で回避.
+                reaction = UnityEngine.Random.value;
+
                 attackDetected = true;
                 attackDetectedTime = Time.time;
 
-                // 回避開始までの遅延時間を設定
-                float baseframe = 1f / 60f;
-                float min = baseframe * 10;
-                float max = baseframe * 30;
-                evadeStartDelay = UnityEngine.Random.Range(min, max);
-            }
-
-            // 攻撃検知フラグが立っている && 遅延時間経過 => 回避開始
-            if (attackDetected && Time.time >= attackDetectedTime + evadeStartDelay)
-            {
-                isEvading = true;
-                attackDetected = false; // フラグを折る
-
-                // 後退
-                characterMove.moveData.moveDis.Value = 1f;
-                await UniTask.Delay(400);
-
-                // 移動停止
-                characterMove.moveData.moveDis.Value = 0f;
-
-                // 攻撃終了待機
-                await UniTask.WaitUntil(() => !playerState.Value.ToString().StartsWith("Attack"));
-
-                isEvading = false;
-            }
-            else if (!isEvading && !attackDetected)
-            {
-                // 通常行動: 距離に応じて接近または攻撃
-                if (distance > 2f)
+                if (reaction < 0.4f)
                 {
-                    // 接近
-                    characterMove.moveData.moveDis.Value = -1f;
+                    // 反応開始までの遅延時間を設定.
+                    float baseframe = 1f / 60f;
+                    float min = baseframe * 10;
+                    float max = baseframe * 30;
+                    reactionDelay = UnityEngine.Random.Range(min, max);
                 }
-                else if (distance <= 2f)
+                else
                 {
-                    // 攻撃範囲内なら停止して攻撃
+                    // 反応開始までの遅延時間を設定.
+                    float baseframe = 1f / 60f;
+                    float min = baseframe * 5;
+                    float max = baseframe * 10;
+                    reactionDelay = UnityEngine.Random.Range(min, max);
+                }
+            }
+
+            // 攻撃検知フラグが立っている && 遅延時間経過 => 反応開始.
+            if (attackDetected && Time.time >= attackDetectedTime + reactionDelay)
+            {
+                isActing = true;
+                attackDetected = false;
+
+                Debug.Log($"reaction : { reaction}");
+                if (reaction < 0.4f)
+                {
+                    // ガード.
                     characterMove.moveData.moveDis.Value = 0f;
-                    characterMove.AttackInput();
-                    await UniTask.Delay(500); // 攻撃後の硬直時間
+                    characterMove.GuardInput();
+
+                    // プレイヤーの攻撃終了まで待機.
+                    await UniTask.WaitUntil(() => !playerState.Value.ToString().StartsWith("Attack"));
+
+                    // ガード解除.
+                    characterMove.GuardOutInput();
+                    await UniTask.Delay(100);
+                }
+                else
+                {
+                    // 後退回避.
+                    characterMove.moveData.moveDis.Value = 1f;
+                    await UniTask.Delay(400);
+
+                    // 移動停止.
+                    characterMove.moveData.moveDis.Value = 0f;
+
+                    // 攻撃終了待機.
+                    await UniTask.WaitUntil(() => !playerState.Value.ToString().StartsWith("Attack"));
+                }
+
+                isActing = false;
+                lastActionTime = Time.time;
+            }
+            else if (!isActing && !attackDetected)
+            {
+                // 通常行動: 距離に応じた戦術選択.
+                if (distance > 3.5f)
+                {
+                    // 遠距離: 接近 or チャージ.
+                    if (currentGage <= 2 && UnityEngine.Random.value < 0.3f && Time.time - lastActionTime > 2f)
+                    {
+                        // チャージ.
+                        characterMove.moveData.moveDis.Value = 0f;
+                        characterMove.ChargeInput();
+                        await UniTask.Delay(1000);
+                        characterMove.ChargeOutInput();
+                        lastActionTime = Time.time;
+                    }
+                    else
+                    {
+                        // 接近.
+                        characterMove.moveData.moveDis.Value = -1f;
+                    }
+                }
+                else if (distance > 2.5f && distance <= 3.5f)
+                {
+                    // 中距離: WaterShot or 接近.
+                    if (currentGage >= 1 && UnityEngine.Random.value < 0.5f)
+                    {
+                        // 水撃.
+                        characterMove.moveData.moveDis.Value = 0f;
+                        characterMove.WaterShotInput();
+                        await UniTask.Delay(600);
+                        lastActionTime = Time.time;
+                    }
+                    else
+                    {
+                        // 接近.
+                        characterMove.moveData.moveDis.Value = -1f;
+                    }
+                }
+                else if (distance <= 2.5f)
+                {
+                    // 近距離: Assault or 通常攻撃.
+                    characterMove.moveData.moveDis.Value = 0f;
+
+                    if (currentGage >= 3 && UnityEngine.Random.value < 0.4f)
+                    {
+                        // 突進攻撃.
+                        characterMove.AssaultInput();
+                        await UniTask.Delay(800);
+                        lastActionTime = Time.time;
+                    }
+                    else
+                    {
+                        // 通常攻撃.
+                        characterMove.AttackInput();
+                        await UniTask.Delay(500);
+                        lastActionTime = Time.time;
+                    }
                 }
             }
 

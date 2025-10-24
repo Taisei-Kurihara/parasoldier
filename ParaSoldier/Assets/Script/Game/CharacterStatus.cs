@@ -37,14 +37,19 @@ public abstract class CharacterStatus : MonoBehaviour
 
     public void DamageReaction(float damage, float blowPower, float blowTime, AttackType attackType)
     {
-        // ガード中の場合、ダメージを100%減衰（無効化）
-        if (currentState.Value == CharacterState.Guard && attackType != AttackType.Assault)
+        // CharacterMoveの無敵状態を確認(ガード無敵も含む).
+        if (characterMove != null && characterMove.IsInvincible)
         {
-            if(attackType == AttackType.WaterShot)
+            Debug.Log($"Invincible! Attack blocked: {attackType}");
+            // ガード中でWaterShotの場合はゲージを加算.
+            if (currentState.Value == CharacterState.Guard && attackType == AttackType.WaterShot)
             {
                 AddGage(1);
             }
-            Debug.Log($"Guard! Attack blocked: {attackType}");
+            else
+            {
+                characterMove.OnGuardHit(blowPower, blowTime, attackType);
+            }
             return;
         }
 
