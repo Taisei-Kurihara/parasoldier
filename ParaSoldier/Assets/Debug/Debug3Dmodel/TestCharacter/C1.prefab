@@ -934,7 +934,7 @@ MonoBehaviour:
       endTime: 1
       damage: 8
       blowPower: 1000
-      blowTime: 0.5
+      blowTime: 1
     nonInterruptTime: 1
     hitSound: {fileID: 8300000, guid: 5b70040d280909d4ea937b62a73bde1d, type: 3}
   Assault:
@@ -942,7 +942,7 @@ MonoBehaviour:
     - attackCollider: {fileID: 4286194881357124056}
       startDelayTime: 0
       endTime: 1
-      damage: 10
+      damage: 20
       blowPower: 5000
       blowTime: 0.3
     nonInterruptTime: 1
@@ -963,7 +963,7 @@ MonoBehaviour:
   waterShotOffset: {x: 0, y: 0, z: 0}
   waterShotHitSound: {fileID: 8300000, guid: 5b70040d280909d4ea937b62a73bde1d, type: 3}
   moveData:
-    speed: 10
+    speed: 13
   isInvincible: 0
   invincibleTime: 1
 --- !u!114 &7403483162130899301
