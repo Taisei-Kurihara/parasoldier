@@ -55,7 +55,7 @@ public class CharacterMove : MonoBehaviour
     Animator parasol;
 
     CancellationToken token; // 破棄検知用のキャンセルトークン
-    Rigidbody rigidbody;     // キャラ移動用の物理ボディ
+    public Rigidbody rigidbody;     // キャラ移動用の物理ボディ
     AudioSource audioSource; // 効果音再生用のオーディオソース
 
 
@@ -82,6 +82,16 @@ public class CharacterMove : MonoBehaviour
     private AudioClip chargeSound;
     #endregion
 
+    //(既)修: 攻撃が当たった位置に基づいてeffect生成するようにしてください.
+    //上: effect(gameobj)変数追加
+    // (既)修:生成したeffectのサイズを10
+    #region ヒットエフェクト設定
+    [SerializeField, Header("ヒットエフェクト"), Tooltip("攻撃がヒットした際に生成するエフェクト")]
+    private GameObject hitEffect;
+
+    [SerializeField, Header("エフェクト破棄時間"), Tooltip("エフェクトを自動的に破棄するまでの時間(秒)")]
+    private float effectDestroyTime = 2.0f;
+    #endregion
 
     #region WaterShot設定
     [SerializeField, Header("WaterShotパーティクルシステム"), Tooltip("水撃のパーティクルエフェクト")]
@@ -215,7 +225,7 @@ public class CharacterMove : MonoBehaviour
             if (CanItBeMoved || Interrupt)
             {
                 NowState = CharacterState.Move;
-                rigidbody.linearVelocity = (Vector3.right * moveData.moveDis.Value) * moveData.Speed;
+                rigidbody.linearVelocity = ((Vector3.right * moveData.moveDis.Value) * moveData.Speed) + new Vector3(0, rigidbody.linearVelocity.y, 0);
             }
 
             character.SetBool("isWalk", (CanItBeMoved || Interrupt));
@@ -253,6 +263,19 @@ public class CharacterMove : MonoBehaviour
     }
 
     /// <summary>
+    /// ヒットエフェクトを生成.
+    /// </summary>
+    void SpawnHitEffect(Vector3 position)
+    {
+        if (hitEffect != null)
+        {
+            GameObject effect = Instantiate(hitEffect, position, Quaternion.identity);
+            effect .transform.localScale = Vector3.one*10;
+            Destroy(effect, effectDestroyTime);
+        }
+    }
+
+    /// <summary>
     /// 攻撃モーション再生処理
     /// </summary>
     async UniTask PlayAttackMotion(AttackData attack)
@@ -271,6 +294,9 @@ public class CharacterMove : MonoBehaviour
             if (target != null)
             {
                 target.DamageReaction(spot.Damage, spot.BlowPower, spot.BlowTime, attack.AttackType);
+
+                // ヒットエフェクトを生成.
+                SpawnHitEffect(col.transform.position);
 
                 // ヒット時効果音を再生.
                 if (attack.hitSound != null && audioSource != null)
@@ -407,6 +433,9 @@ public class CharacterMove : MonoBehaviour
                         AttackType.WaterShot
                     );
 
+                    // ヒットエフェクトを生成.
+                    SpawnHitEffect(col.transform.position);
+
                     // WaterShotヒット時効果音を再生.
                     if (waterShotHitSound != null && audioSource != null)
                     {
@@ -516,6 +545,9 @@ public class CharacterMove : MonoBehaviour
             if (target != null)
             {
                 target.DamageReaction(spot.Damage, spot.BlowPower, spot.BlowTime, Guard.AttackType);
+
+                // ヒットエフェクトを生成.
+                SpawnHitEffect(col.transform.position);
 
                 // ヒット時効果音を再生.
                 if (Guard.hitSound != null && audioSource != null)

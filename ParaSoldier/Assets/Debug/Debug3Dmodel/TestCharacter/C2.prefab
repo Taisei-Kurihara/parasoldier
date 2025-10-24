@@ -902,7 +902,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 120
+  m_Constraints: 124
   m_CollisionDetection: 0
 --- !u!114 &6700252942495274834
 MonoBehaviour:
@@ -918,6 +918,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   character: {fileID: 2338286505377223343}
   parasol: {fileID: 6599519386380782746}
+  rigidbody: {fileID: 0}
   Attack01:
     attackColliders:
     - attackCollider: {fileID: 5008428804375799716}
@@ -985,6 +986,8 @@ MonoBehaviour:
     nonInterruptTime: 0
     hitSound: {fileID: 8300000, guid: 6f5a0c7eec1bf0449877a80f29042d9d, type: 3}
   chargeSound: {fileID: 8300000, guid: 1f237d3d2fbe0644a984c64d73905ca9, type: 3}
+  hitEffect: {fileID: 5024009746357069194, guid: ec3f674830402cc45bce805cf6493db7, type: 3}
+  effectDestroyTime: 2
   waterShotParticle: {fileID: 3128842588030383256, guid: 87dc1761c3f9ac948916641cdf5d48fe, type: 3}
   waterShotCollider: {fileID: 5767587080579371335}
   waterShotOffset: {x: 0, y: 0, z: 0}
@@ -994,7 +997,7 @@ MonoBehaviour:
   guardBreakCount: 3
   isInvincible: 0
   isGuardInvincible: 0
-  invincibleTime: 1
+  invincibleTime: 0.1
 --- !u!114 &4522058589535634026
 MonoBehaviour:
   m_ObjectHideFlags: 0
